@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import GalleryCanvas from '@/components/GalleryCanvas';
+import HeroSection from '@/components/HeroSection';
+import ProjectCard from '@/components/ProjectCard';
+import SectionHeader from '@/components/SectionHeader';
 import ScrollReveal from '@/components/ScrollReveal';
-import ProjectShowcase from '@/components/ProjectShowcase';
+import CTASection from '@/components/CTASection';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, Code2, Smartphone, BarChart3, Database, Brain, Zap } from 'lucide-react';
+import { Code2, Smartphone, BarChart3, Database, Brain, Zap, ArrowRight, Mail, Github, Linkedin, Lightbulb, Rocket, Shield, Users } from 'lucide-react';
 
 /**
- * Design Philosophy: Cinematic Minimalism
- * - Hero section with 3D gallery canvas
- * - Scroll-driven camera movement
+ * Premium Portfolio Homepage
+ * Design Philosophy: Cinematic Minimalism with Premium Micro-Interactions
+ * - Hero Section: 3D gallery with floating frames
+ * - Project Sections: Multiple card variants with unique animations
+ * - Scroll-driven cinematics with GSAP
  * - Professional gallery aesthetic with electric blue accents
- * - Multiple specialized project sections
  */
 
 interface PortfolioItem {
@@ -210,14 +213,8 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div className="container max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/logo-icon-LXNzDpwEaddB6wdAjqbhzt.webp"
-              alt="Logo"
-              className="w-8 h-8"
-            />
-            <span className="text-xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-display)' }}>
-              Portfolio
-            </span>
+            <div className="w-2 h-6 bg-blue-600 rounded-full"></div>
+            <span className="text-xl font-bold text-gray-900">Portfolio</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#gallery" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
@@ -235,181 +232,191 @@ export default function Home() {
       </header>
 
       {/* Hero Section with 3D Gallery */}
-      <section id="gallery" className="relative w-full h-screen pt-20">
-        <GalleryCanvas />
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-gray-400" />
-        </div>
+      <section id="gallery" className="relative w-full pt-20">
+        <HeroSection />
       </section>
 
       {/* Web Development Projects */}
-      <section className="py-24 bg-gradient-to-b from-white to-blue-50">
+      <section className="py-32 bg-gradient-to-b from-white to-blue-50">
         <div className="container max-w-7xl mx-auto px-6">
-          <ScrollReveal direction="up">
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-4">
-                <Code2 className="w-8 h-8 text-blue-600" />
-                <h2
-                  className="text-5xl font-bold text-gray-900"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Web Development
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Cutting-edge web solutions built with modern technologies and best practices
-              </p>
-            </div>
-          </ScrollReveal>
-          <ProjectShowcase projects={webProjects} />
+          <SectionHeader
+            icon={Code2}
+            title="Web Development"
+            subtitle="Cutting-edge web solutions built with modern technologies and best practices"
+            accentColor="#0066FF"
+            variant="default"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {webProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                index={index}
+                variant={index === 0 ? 'default' : 'default'}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Mobile Development Projects */}
-      <section className="py-24 bg-gradient-to-b from-purple-50 to-white">
+      <section className="py-32 bg-gradient-to-b from-purple-50 to-white">
         <div className="container max-w-7xl mx-auto px-6">
-          <ScrollReveal direction="up">
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-4">
-                <Smartphone className="w-8 h-8 text-purple-600" />
-                <h2
-                  className="text-5xl font-bold text-gray-900"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Mobile Applications
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Native and cross-platform mobile apps with exceptional user experiences
-              </p>
-            </div>
-          </ScrollReveal>
-          <ProjectShowcase projects={mobileProjects} />
+          <SectionHeader
+            icon={Smartphone}
+            title="Mobile Applications"
+            subtitle="Native and cross-platform mobile apps with exceptional user experiences"
+            accentColor="#7C3AED"
+            variant="centered"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {mobileProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                index={index}
+                variant="glassmorphic"
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Accounting Systems */}
-      <section className="py-24 bg-gradient-to-b from-white to-green-50">
+      <section className="py-32 bg-gradient-to-b from-white to-green-50">
         <div className="container max-w-7xl mx-auto px-6">
-          <ScrollReveal direction="up">
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-4">
-                <BarChart3 className="w-8 h-8 text-green-600" />
-                <h2
-                  className="text-5xl font-bold text-gray-900"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Accounting Systems
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Comprehensive financial management solutions with advanced analytics
-              </p>
-            </div>
-          </ScrollReveal>
-          <ProjectShowcase projects={accountingProjects} />
+          <SectionHeader
+            icon={BarChart3}
+            title="Accounting Systems"
+            subtitle="Comprehensive financial management solutions with advanced analytics"
+            accentColor="#10B981"
+            variant="split"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {accountingProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                index={index}
+                variant="minimal"
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Custom ERP Systems */}
-      <section className="py-24 bg-gradient-to-b from-amber-50 to-white">
+      <section className="py-32 bg-gradient-to-b from-amber-50 to-white">
         <div className="container max-w-7xl mx-auto px-6">
-          <ScrollReveal direction="up">
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-4">
-                <Database className="w-8 h-8 text-amber-600" />
-                <h2
-                  className="text-5xl font-bold text-gray-900"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Custom ERP Solutions
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Enterprise resource planning systems tailored to your business needs
-              </p>
-            </div>
-          </ScrollReveal>
-          <ProjectShowcase projects={erpProjects} />
+          <SectionHeader
+            icon={Database}
+            title="Custom ERP Solutions"
+            subtitle="Enterprise resource planning systems tailored to your business needs"
+            accentColor="#F59E0B"
+            variant="default"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {erpProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                index={index}
+                variant={index === 1 ? 'featured' : 'default'}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* AI & Machine Learning */}
-      <section className="py-24 bg-gradient-to-b from-white to-pink-50">
+      <section className="py-32 bg-gradient-to-b from-white to-pink-50">
         <div className="container max-w-7xl mx-auto px-6">
-          <ScrollReveal direction="up">
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-4">
-                <Brain className="w-8 h-8 text-pink-600" />
-                <h2
-                  className="text-5xl font-bold text-gray-900"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  AI & Machine Learning
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Intelligent systems powered by advanced machine learning models
-              </p>
-            </div>
-          </ScrollReveal>
-          <ProjectShowcase projects={aiProjects} />
+          <SectionHeader
+            icon={Brain}
+            title="AI & Machine Learning"
+            subtitle="Intelligent systems powered by advanced machine learning models"
+            accentColor="#EC4899"
+            variant="centered"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {aiProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                index={index}
+                variant="glassmorphic"
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Automation & Integration */}
-      <section className="py-24 bg-gradient-to-b from-orange-50 to-white">
+      <section className="py-32 bg-gradient-to-b from-orange-50 to-white">
         <div className="container max-w-7xl mx-auto px-6">
-          <ScrollReveal direction="up">
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-4">
-                <Zap className="w-8 h-8 text-orange-600" />
-                <h2
-                  className="text-5xl font-bold text-gray-900"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Automation & Integration
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Streamline operations with intelligent workflow automation and API integrations
-              </p>
-            </div>
-          </ScrollReveal>
-          <ProjectShowcase projects={automationProjects} />
+          <SectionHeader
+            icon={Zap}
+            title="Automation & Integration"
+            subtitle="Seamless workflow automation and system integration solutions"
+            accentColor="#FF6B35"
+            variant="split"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {automationProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                index={index}
+                variant="minimal"
+              />
+            ))}
+          </div>
         </div>
       </section>
 
+
+
       {/* About Section */}
-      <section id="about" className="py-24 bg-gray-50">
+      <section id="about" className="py-32 bg-gradient-to-b from-blue-50 to-white">
         <div className="container max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <ScrollReveal direction="left">
               <div>
-                <h2
-                  className="text-5xl font-bold text-gray-900 mb-6"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  About My Work
-                </h2>
-                <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                  I specialize in creating immersive digital experiences that blend cutting-edge technology with thoughtful design. Each project is an opportunity to push boundaries and deliver exceptional results.
+                <h2 className="text-5xl font-bold text-gray-900 mb-6">About My Work</h2>
+                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                  With over a decade of experience in digital transformation, I specialize in creating innovative solutions that drive business growth and operational excellence.
                 </p>
-                <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-                  My approach combines strategic thinking, creative problem-solving, and meticulous attention to detail to transform visions into compelling realities.
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  Our team combines technical expertise with strategic thinking to deliver solutions that not only meet today's requirements but anticipate tomorrow's challenges.
                 </p>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base">
-                  Let's Work Together
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
+                  Get in Touch
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             </ScrollReveal>
+
             <ScrollReveal direction="right">
-              <div className="relative">
-                <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-gray-100 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-6xl font-bold text-blue-600 mb-4">50+</div>
-                    <p className="text-gray-700 font-semibold">Projects Delivered</p>
-                  </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                  <Code2 className="w-8 h-8 text-blue-600 mb-4" />
+                  <h3 className="font-bold text-gray-900 mb-2">Web Development</h3>
+                  <p className="text-sm text-gray-600">Modern, scalable web applications</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                  <Smartphone className="w-8 h-8 text-purple-600 mb-4" />
+                  <h3 className="font-bold text-gray-900 mb-2">Mobile Apps</h3>
+                  <p className="text-sm text-gray-600">Cross-platform mobile solutions</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                  <Database className="w-8 h-8 text-green-600 mb-4" />
+                  <h3 className="font-bold text-gray-900 mb-2">ERP Systems</h3>
+                  <p className="text-sm text-gray-600">Enterprise solutions tailored to you</p>
+                </div>
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                  <Brain className="w-8 h-8 text-pink-600 mb-4" />
+                  <h3 className="font-bold text-gray-900 mb-2">AI & ML</h3>
+                  <p className="text-sm text-gray-600">Intelligent system solutions</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -417,37 +424,72 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
+      {/* CTA Section */}
+      <section className="py-32 bg-white">
         <div className="container max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <CTASection
+            title="Ready to Transform Your Business?"
+            subtitle="Let's collaborate to create innovative solutions that drive growth and excellence"
+            primaryCTA={{ text: 'Start Your Project', href: '#contact' }}
+            secondaryCTA={{ text: 'Learn More', href: '#about' }}
+            variant="gradient"
+            accentColor="#0066FF"
+          />
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-950 text-white py-16">
+        <div className="container max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div>
-              <h3 className="text-white font-bold mb-4">Portfolio</h3>
-              <p className="text-sm text-gray-400">Cinematic 3D Gallery Experience</p>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-6 bg-blue-600 rounded-full"></div>
+                <span className="font-bold text-lg">Portfolio</span>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed">Creating digital excellence through innovation, precision, and strategic thinking.</p>
             </div>
             <div>
-              <h3 className="text-white font-bold mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#gallery" className="text-gray-400 hover:text-white transition-colors">Gallery</a></li>
-                <li><a href="#projects" className="text-gray-400 hover:text-white transition-colors">Projects</a></li>
-                <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">About</a></li>
+              <h4 className="font-bold mb-4">Services</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">Web Development</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Mobile Apps</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">ERP Systems</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">AI Solutions</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-bold mb-4">Social</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Twitter</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">GitHub</a></li>
+              <h4 className="font-bold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-bold mb-4">Contact</h3>
-              <p className="text-sm text-gray-400">hello@portfolio.com</p>
+              <h4 className="font-bold mb-4">Connect</h4>
+              <div className="flex gap-4">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Github className="w-5 h-5" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Linkedin className="w-5 h-5" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Mail className="w-5 h-5" />
+                </a>
+              </div>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 Cinematic Portfolio. All rights reserved.</p>
+
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-400 text-sm">© 2024 Portfolio. All rights reserved.</p>
+            <div className="flex gap-6 mt-4 md:mt-0 text-sm text-gray-400">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-white transition-colors">Sitemap</a>
+            </div>
           </div>
         </div>
       </footer>

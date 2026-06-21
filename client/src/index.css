@@ -53,8 +53,9 @@
   --chart-4: #002966;
   --chart-5: #001533;
   --radius: 0.5rem;
-  --font-display: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Clash Display', 'Playfair Display', 'PP Editorial New', serif;
+  --font-body: 'Geist Sans', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  --font-mono: 'Geist Mono', 'SF Mono', 'JetBrains Mono', monospace;
   --background: #FFFFFF;
   --foreground: #1A1A1A;
   --card: #F8F9FA;

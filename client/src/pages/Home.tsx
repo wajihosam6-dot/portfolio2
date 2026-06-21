@@ -234,9 +234,11 @@ export default function Home() {
           />
           <Timeline 
             items={[
-              { year: '2024', title: 'Global Expansion', description: 'Opened new offices in tech hubs worldwide.', color: '#0066FF' },
-              { year: '2023', title: 'AI Integration', description: 'Launched enterprise-grade AI solutions.', color: '#7C3AED' },
-              { year: '2022', title: 'Company Founded', description: 'Started with a vision for digital excellence.', color: '#10B981' },
+              { year: '2026', title: 'Global Expansion', description: 'Opened new offices in tech hubs across Europe and Asia, serving 200+ enterprise clients worldwide.', color: '#0066FF' },
+              { year: '2025', title: 'AI Integration', description: 'Launched enterprise-grade AI solutions with predictive analytics, NLP, and computer vision capabilities.', color: '#7C3AED' },
+              { year: '2024', title: 'Product Launch', description: 'Released flagship SaaS platform serving 50,000+ users with real-time collaboration and analytics.', color: '#10B981' },
+              { year: '2023', title: 'Series A Funding', description: 'Secured $10M in Series A funding to accelerate growth and expand the engineering team.', color: '#F59E0B' },
+              { year: '2022', title: 'Company Founded', description: 'Started with a vision for digital excellence, combining cutting-edge design with powerful technology.', color: '#EC4899' },
             ]}
           />
         </div>

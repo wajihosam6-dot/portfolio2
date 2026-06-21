@@ -11,7 +11,9 @@ export default function CursorFollower() {
 
     let mouse = { x: -100, y: -100 };
     let trail: { x: number; y: number; age: number }[] = [];
-    const MAX_TRAIL = 18;
+    const MAX_TRAIL = 12;
+    let lastMove = 0;
+    let rafId: number;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -22,11 +24,12 @@ export default function CursorFollower() {
 
     const onMouse = (e: MouseEvent) => {
       mouse = { x: e.clientX, y: e.clientY };
+      lastMove = Date.now();
+      if (!rafId) rafId = requestAnimationFrame(animate);
     };
     window.addEventListener('mousemove', onMouse);
     window.addEventListener('mouseleave', () => { mouse = { x: -100, y: -100 }; });
 
-    let rafId: number;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -37,36 +40,37 @@ export default function CursorFollower() {
         const p = trail[i];
         p.age++;
         const progress = 1 - p.age / MAX_TRAIL;
-        const alpha = progress * 0.35;
-        const radius = progress * 5;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 102, 255, ${alpha})`;
+        ctx.arc(p.x, p.y, progress * 4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 102, 255, ${progress * 0.3})`;
         ctx.fill();
       }
 
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 18, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(0, 102, 255, 0.5)';
-      ctx.lineWidth = 1.5;
+      ctx.arc(mouse.x, mouse.y, 16, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0, 102, 255, 0.4)';
+      ctx.lineWidth = 1.2;
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
+      ctx.arc(mouse.x, mouse.y, 2, 0, Math.PI * 2);
       ctx.fillStyle = '#0066FF';
       ctx.fill();
 
-      const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 40);
-      gradient.addColorStop(0, 'rgba(0, 102, 255, 0.06)');
-      gradient.addColorStop(1, 'rgba(0, 102, 255, 0)');
+      const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 30);
+      g.addColorStop(0, 'rgba(0, 102, 255, 0.05)');
+      g.addColorStop(1, 'rgba(0, 102, 255, 0)');
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 40, 0, Math.PI * 2);
-      ctx.fillStyle = gradient;
+      ctx.arc(mouse.x, mouse.y, 30, 0, Math.PI * 2);
+      ctx.fillStyle = g;
       ctx.fill();
 
-      rafId = requestAnimationFrame(animate);
+      if (Date.now() - lastMove < 2000) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        rafId = 0;
+      }
     };
-    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

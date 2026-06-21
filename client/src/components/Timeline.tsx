@@ -18,71 +18,60 @@ interface TimelineProps {
 }
 
 export const Timeline: React.FC<TimelineProps> = ({ items }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    const line = lineRef.current;
     const wrapper = wrapperRef.current;
-    if (!container || !line || !wrapper) return;
+    const line = lineRef.current;
+    if (!wrapper || !line) return;
 
     const cards = wrapper.querySelectorAll<HTMLDivElement>('[data-timeline-card]');
     const dots = wrapper.querySelectorAll<HTMLDivElement>('[data-timeline-dot]');
 
-    // Single master timeline — everything syncs to one scroll
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: container,
+        trigger: wrapper,
         start: 'top center',
         end: 'bottom center',
-        scrub: 1.2,
+        scrub: 0.8,
       },
     });
 
-    // Line grows full height
     tl.to(line, { height: '100%', ease: 'none' }, 0);
 
-    // Each card fades in sequentially as the line grows
     const seg = 1 / items.length;
     cards.forEach((card, i) => {
-      const entry = i * seg + seg * 0.05;   // 5% into segment
-      const full = i * seg + seg * 0.45;    // 45% into segment
+      const entry = i * seg + seg * 0.08;
       tl.fromTo(
         card,
-        { opacity: 0, y: 60, scale: 0.85, rotateX: 12 },
-        { opacity: 1, y: 0, scale: 1, rotateX: 0, ease: 'power2.out' },
+        { opacity: 0, y: 50, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, ease: 'power2.out', duration: 0.5 },
         entry
       );
-      // keep visible until after the segment passes
-      tl.to(card, { opacity: 1 }, full);
     });
 
-    // Dots pulse as they're reached
     dots.forEach((dot, i) => {
-      const entry = i * seg + seg * 0.1;
-      const peak = i * seg + seg * 0.3;
+      const entry = i * seg + seg * 0.12;
       tl.fromTo(
         dot,
-        { scale: 0.3, opacity: 0, borderWidth: '4px' },
-        { scale: 1.5, opacity: 1, duration: 0.15, ease: 'back.out(2)' },
+        { scale: 0.3, opacity: 0 },
+        { scale: 1.3, opacity: 1, duration: 0.2, ease: 'back.out(2)' },
         entry
       );
-      tl.to(dot, { scale: 1, borderWidth: '2px', duration: 0.2 }, peak);
+      const hold = i * seg + seg * 0.35;
+      tl.to(dot, { scale: 1, duration: 0.15 }, hold);
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
+    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
   }, [items.length]);
 
   return (
-    <section ref={containerRef} className="py-32 bg-black relative overflow-hidden">
+    <section ref={sectionRef} className="py-32 bg-black relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-purple-950/10 via-black to-blue-950/10" />
 
       <div className="container max-w-6xl mx-auto px-6 relative z-10">
-        {/* Header */}
         <motion.div
           className="text-center mb-24"
           initial={{ opacity: 0, y: 40 }}
@@ -105,13 +94,11 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
           </p>
         </motion.div>
 
-        {/* Timeline Track */}
         <div
           ref={wrapperRef}
           className="relative max-w-5xl mx-auto"
-          style={{ height: `${items.length * 500}px` }}
+          style={{ height: `${items.length * 550}px` }}
         >
-          {/* Vertical Line */}
           <div
             ref={lineRef}
             className="absolute left-1/2 top-0 w-[2px] h-0 -translate-x-1/2 z-0"
@@ -121,7 +108,6 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
             }}
           />
 
-          {/* Timeline Items */}
           <div className="relative z-10">
             {items.map((item, index) => {
               const isLeft = index % 2 === 0;
@@ -129,9 +115,8 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
                 <div
                   key={index}
                   className={`absolute flex items-center gap-6 md:gap-12 w-full ${isLeft ? 'flex-row' : 'flex-row-reverse'}`}
-                  style={{ top: `${index * 500 + 50}px` }}
+                  style={{ top: `${index * 550 + 50}px` }}
                 >
-                  {/* Card */}
                   <div className="w-full md:w-5/12" data-timeline-card>
                     <div
                       className="group relative overflow-hidden rounded-2xl p-6 md:p-8 border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-500 cursor-pointer"
@@ -157,7 +142,6 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
                     </div>
                   </div>
 
-                  {/* Center Dot */}
                   <div className="w-full md:w-2/12 flex justify-center">
                     <div
                       data-timeline-dot

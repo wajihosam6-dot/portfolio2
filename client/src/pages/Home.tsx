@@ -217,26 +217,38 @@ const automationProjects: PortfolioItem[] = [
 ];
 
 export default function Home() {
+  const [isScrolling, setIsScrolling] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="container max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-6 bg-blue-600 rounded-full"></div>
-            <span className="text-xl font-bold text-gray-900">Portfolio</span>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolling ? 'bg-black/80 backdrop-blur-xl border-b border-blue-500/20 py-4' : 'bg-transparent py-6'}`}>
+        <div className="container max-w-7xl mx-auto px-6 flex items-center justify-between">
+          <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="w-2 h-8 bg-blue-600 rounded-full group-hover:scale-y-125 transition-transform"></div>
+            <span className="text-2xl font-black text-white tracking-tighter">ORTECH</span>
           </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#gallery" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              Gallery
-            </a>
-            <a href="#projects" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              Projects
-            </a>
-            <a href="#about" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              About
-            </a>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Contact</Button>
+          <nav className="hidden md:flex items-center gap-10">
+            {['Gallery', 'Projects', 'About', 'Services'].map((item) => (
+              <a 
+                key={item}
+                href={`#${item.toLowerCase()}`} 
+                className="text-xs font-bold uppercase tracking-[0.2em] text-blue-100/70 hover:text-blue-400 transition-colors"
+              >
+                {item}
+              </a>
+            ))}
+            <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all hover:shadow-[0_0_20px_rgba(0,102,255,0.4)]">
+              Get in Touch
+            </button>
           </nav>
         </div>
       </header>

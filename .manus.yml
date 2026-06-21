@@ -1,0 +1,47 @@
+name: ortech-portfolio
+description: Premium Cinematic 3D Portfolio - Luxury Tech Design
+type: web-db-user
+framework: react
+language: typescript
+
+# Build configuration
+build:
+  command: pnpm run build
+  outputDir: dist
+  nodeVersion: "22"
+
+# Environment variables for production
+env:
+  NODE_ENV: production
+  VITE_API_URL: /api
+
+# Deployment settings
+deploy:
+  hosting: reserved
+  region: us-central1
+  memory: 512
+  cpu: 1
+  timeout: 60
+
+# SEO and metadata
+seo:
+  title: "ORTECH - Premium Portfolio"
+  description: "Cinematic 3D portfolio showcasing innovative digital solutions with luxury design and interactive experiences."
+  keywords: "portfolio, 3D, design, web development, luxury tech"
+  ogImage: "/og-image.png"
+
+# Performance optimizations
+performance:
+  enableCaching: true
+  cacheTTL: 3600
+  enableGzip: true
+  enableBrotli: true
+
+# Security headers
+security:
+  enableHSTS: true
+  enableCSP: true
+  enableXFrameOptions: true
+
+# Custom domain (optional)
+# domain: your-domain.com

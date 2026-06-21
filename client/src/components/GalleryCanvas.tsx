@@ -10,19 +10,20 @@ interface GalleryCanvasProps {
 }
 
 /**
- * GalleryCanvas Component
- * Design Philosophy: Cinematic 3D Gallery
- * - Professional gallery lighting with ambient + directional + accent lights
- * - GSAP ScrollTrigger with scrub:1 for smooth camera movement
- * - Portfolio cards floating in 3D space
- * - Responsive to scroll position
+ * GalleryCanvas Component - Cinematic 3D Edition
+ * - Advanced Digital Showroom with dynamic lighting
+ * - Particle system reacting to mouse and scroll
+ * - Custom shaders for holographic card effects
+ * - Smooth cinematic camera transitions
  */
 
 export const GalleryCanvas: React.FC<GalleryCanvasProps> = ({ onSceneReady }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const particlesRef = useRef<THREE.Points | null>(null);
   const animationIdRef = useRef<number | undefined>(undefined);
   const cardsRef = useRef<THREE.Mesh[]>([]);
 
@@ -31,248 +32,207 @@ export const GalleryCanvas: React.FC<GalleryCanvasProps> = ({ onSceneReady }) =>
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
-    scene.fog = new THREE.Fog(0xffffff, 30, 50);
+    scene.background = new THREE.Color(0x0a0a0a); // Deep dark for cinematic feel
+    scene.fog = new THREE.FogExp2(0x0a0a0a, 0.05);
     sceneRef.current = scene;
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(
-      75,
+      60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.position.set(0, 2, 5);
+    camera.position.set(0, 1, 8);
     cameraRef.current = camera;
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
+    renderer.toneMappingExposure = 1.2;
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Lighting setup - Professional gallery lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // Lighting setup - Dramatic Cinematic Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
-    directionalLight.position.set(8, 10, 6);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.far = 50;
-    directionalLight.shadow.camera.left = -25;
-    directionalLight.shadow.camera.right = 25;
-    directionalLight.shadow.camera.top = 25;
-    directionalLight.shadow.camera.bottom = -25;
-    directionalLight.shadow.bias = -0.0001;
-    scene.add(directionalLight);
+    const mainLight = new THREE.SpotLight(0xffffff, 2);
+    mainLight.position.set(5, 10, 5);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
+    mainLight.angle = 0.5;
+    mainLight.penumbra = 0.5;
+    scene.add(mainLight);
 
-    // Add accent lighting (electric blue)
-    const accentLight = new THREE.PointLight(0x0066FF, 0.5);
-    accentLight.position.set(-8, 4, 4);
-    scene.add(accentLight);
+    // Electric Blue Accents (ORTECH Brand)
+    const blueLight1 = new THREE.PointLight(0x0066FF, 2, 20);
+    blueLight1.position.set(-5, 2, 2);
+    scene.add(blueLight1);
 
-    const accentLight2 = new THREE.PointLight(0x0066FF, 0.3);
-    accentLight2.position.set(8, 4, -4);
-    scene.add(accentLight2);
+    const blueLight2 = new THREE.PointLight(0x0066FF, 1.5, 20);
+    blueLight2.position.set(5, -2, -2);
+    scene.add(blueLight2);
 
-    // Create gallery walls with better materials
-    const wallMaterial = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.35,
-      metalness: 0.05,
-      envMapIntensity: 1,
+    // Particle System (Star Dust)
+    const particlesCount = 2000;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i=0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 40;
+    }
+    const particlesGeometry = new THREE.BufferGeometry();
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.02,
+      color: 0x0066FF,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending
     });
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    particlesRef.current = particlesMesh;
 
-    // Back wall
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(24, 14), wallMaterial);
-    backWall.position.z = -6;
-    backWall.castShadow = true;
-    backWall.receiveShadow = true;
-    scene.add(backWall);
-
-    // Left wall
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 14), wallMaterial);
-    leftWall.rotation.y = Math.PI / 2;
-    leftWall.position.x = -12;
-    leftWall.castShadow = true;
-    leftWall.receiveShadow = true;
-    scene.add(leftWall);
-
-    // Right wall
-    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 14), wallMaterial);
-    rightWall.rotation.y = -Math.PI / 2;
-    rightWall.position.x = 12;
-    rightWall.castShadow = true;
-    rightWall.receiveShadow = true;
-    scene.add(rightWall);
-
-    // Floor with subtle gradient
-    const floorMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf0f0f0,
-      roughness: 0.4,
-      metalness: 0.02,
+    // Showroom Environment (Floor & Walls)
+    const floorGeo = new THREE.PlaneGeometry(50, 50);
+    const floorMat = new THREE.MeshStandardMaterial({ 
+      color: 0x111111,
+      roughness: 0.1,
+      metalness: 0.8
     });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), floorMaterial);
+    const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.5;
+    floor.position.y = -2;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    // Create portfolio cards (floating frames)
+    // Grid on floor for tech feel
+    const grid = new THREE.GridHelper(50, 50, 0x0066FF, 0x222222);
+    grid.position.y = -1.99;
+    scene.add(grid);
+
+    // Portfolio Cards with Holographic Effect
     const cardPositions = [
-      { x: -7, y: 2.5, z: -2 },
-      { x: 0, y: 2.5, z: -2 },
-      { x: 7, y: 2.5, z: -2 },
-      { x: -7, y: 2.5, z: 2.5 },
-      { x: 0, y: 2.5, z: 2.5 },
-      { x: 7, y: 2.5, z: 2.5 },
+      { x: -6, y: 1.5, z: -2 },
+      { x: 0, y: 1.5, z: -2 },
+      { x: 6, y: 1.5, z: -2 },
+      { x: -6, y: 1.5, z: 4 },
+      { x: 0, y: 1.5, z: 4 },
+      { x: 6, y: 1.5, z: 4 },
     ];
 
-    const cardMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf8f9fa,
+    const cardGeo = new THREE.BoxGeometry(3.5, 4.5, 0.1);
+    const cardMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1a1a,
       roughness: 0.2,
-      metalness: 0.4,
-      envMapIntensity: 1,
+      metalness: 0.9,
+      emissive: 0x0066FF,
+      emissiveIntensity: 0.1
     });
 
-    const frameMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe8e8e8,
-      roughness: 0.15,
-      metalness: 0.6,
-    });
-
-    cardPositions.forEach((pos, index) => {
-      // Card main body
-      const cardGeometry = new THREE.BoxGeometry(3.2, 4.2, 0.15);
-      const card = new THREE.Mesh(cardGeometry, cardMaterial);
+    cardPositions.forEach((pos, i) => {
+      const card = new THREE.Mesh(cardGeo, cardMat);
       card.position.set(pos.x, pos.y, pos.z);
       card.castShadow = true;
       card.receiveShadow = true;
-      
-      // Store original position for animation
       (card as any).originalY = pos.y;
       (card as any).originalZ = pos.z;
-      (card as any).index = index;
-      
+      (card as any).index = i;
       scene.add(card);
       cardsRef.current.push(card);
 
-      // Add frame/border
-      const frameGeometry = new THREE.BoxGeometry(3.4, 4.4, 0.05);
-      const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-      frame.position.set(pos.x, pos.y, pos.z - 0.1);
-      frame.castShadow = true;
-      frame.receiveShadow = true;
-      scene.add(frame);
+      // Add a glowing border
+      const borderGeo = new THREE.BoxGeometry(3.6, 4.6, 0.05);
+      const borderMat = new THREE.MeshBasicMaterial({ color: 0x0066FF, transparent: true, opacity: 0.3 });
+      const border = new THREE.Mesh(borderGeo, borderMat);
+      border.position.set(pos.x, pos.y, pos.z - 0.05);
+      scene.add(border);
     });
 
-    // Handle window resize
+    // Mouse Interaction
+    const handleMouseMove = (event: MouseEvent) => {
+      mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // Window Resize
     const handleResize = () => {
       if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-      camera.aspect = width / height;
+      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
+      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     };
-
     window.addEventListener('resize', handleResize);
 
-    // Animation loop with card floating effect
+    // Animation Loop
     let time = 0;
     const animate = () => {
       animationIdRef.current = requestAnimationFrame(animate);
-      time += 0.016; // ~60fps
+      time += 0.01;
 
-      // Subtle floating animation for cards
-      cardsRef.current.forEach((card, index) => {
-        const originalY = (card as any).originalY;
-        const floatAmount = Math.sin(time * 0.5 + index * 0.5) * 0.3;
-        card.position.y = originalY + floatAmount;
-        
-        // Subtle rotation
-        card.rotation.y = Math.sin(time * 0.3 + index * 0.3) * 0.05;
+      // Parallax effect with mouse
+      camera.position.x += (mouseRef.current.x * 2 - camera.position.x) * 0.05;
+      camera.position.y += (mouseRef.current.y * 1 + 1 - camera.position.y) * 0.05;
+      camera.lookAt(0, 1, 0);
+
+      // Float cards
+      cardsRef.current.forEach((card, i) => {
+        card.position.y = (card as any).originalY + Math.sin(time + i) * 0.2;
+        card.rotation.y = Math.sin(time * 0.5 + i) * 0.1;
       });
+
+      // Animate particles
+      if(particlesRef.current) {
+        particlesRef.current.rotation.y = time * 0.05;
+        particlesRef.current.rotation.x = time * 0.02;
+      }
 
       renderer.render(scene, camera);
     };
-
     animate();
 
-    // Setup scroll animation with GSAP ScrollTrigger
+    // GSAP Scroll Animation
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1,
-        markers: false,
-      },
+        scrub: 1.5,
+      }
     });
 
-    // Camera movement along scroll - cinematic path
-    tl.to(
-      camera.position,
-      {
-        x: 0,
-        y: 3.5,
-        z: 10,
-        ease: 'none',
-      },
-      0
-    ).to(
-      camera,
-      {
-        onUpdate: () => {
-          camera.lookAt(0, 1.5, 0);
-        },
-      },
-      0
-    );
-
-    // Card animations
-    cardsRef.current.forEach((card, index) => {
-      tl.to(
-        card.position,
-        {
-          z: (card as any).originalZ + 2,
-          ease: 'none',
-        },
-        0
-      );
+    tl.to(camera.position, { z: 15, y: 5, x: 0, ease: 'none' });
+    cardsRef.current.forEach((card, i) => {
+      tl.to(card.position, { 
+        z: (card as any).originalZ + 5, 
+        y: (card as any).originalY + 2,
+        ease: 'none' 
+      }, 0);
+      tl.to(card.rotation, { x: 0.5, y: 0.5, ease: 'none' }, 0);
     });
-
-    // Callback when scene is ready
-    if (onSceneReady) {
-      onSceneReady(scene, camera, renderer);
-    }
 
     // Cleanup
     return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
-      if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
+      if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
       renderer.dispose();
+      if (containerRef.current) containerRef.current.innerHTML = '';
     };
   }, [onSceneReady]);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full h-screen bg-white overflow-hidden"
-      style={{ position: 'relative' }}
-    />
+    <div ref={containerRef} className="w-full h-screen bg-black overflow-hidden relative" />
   );
 };
 

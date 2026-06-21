@@ -82,19 +82,19 @@ export const StackingCards: React.FC<StackingCardsProps> = ({
   }, []);
 
   return (
-    <section className="relative py-32 bg-gradient-to-b from-blue-50 to-white">
+    <section className="relative py-32 bg-black">
       <div className="container max-w-4xl mx-auto px-6">
         {/* Header */}
         {title && (
           <div className="text-center mb-20">
             <h2
-              className="text-5xl md:text-6xl font-bold text-gray-900 mb-4"
+              className="text-5xl md:text-6xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               {title}
             </h2>
             {subtitle && (
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
+              <p className="text-lg text-gray-400 max-w-2xl mx-auto">{subtitle}</p>
             )}
           </div>
         )}
@@ -147,7 +147,7 @@ export const StackingCards: React.FC<StackingCardsProps> = ({
                     >
                       {`Step ${index + 1}`}
                     </div>
-                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-3xl md:text-4xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
                       {card.title}
                     </h3>
                   </div>
@@ -161,7 +161,7 @@ export const StackingCards: React.FC<StackingCardsProps> = ({
                   </div>
                 </div>
 
-                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                <p className="text-lg text-gray-400 mb-6 leading-relaxed">
                   {card.description}
                 </p>
 
@@ -191,7 +191,7 @@ export const StackingCards: React.FC<StackingCardsProps> = ({
                             />
                           </svg>
                         </div>
-                        <span className="text-gray-700 text-sm">{detail}</span>
+                        <span className="text-gray-400 text-sm">{detail}</span>
                       </div>
                     ))}
                   </div>

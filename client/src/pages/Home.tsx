@@ -15,6 +15,7 @@ import AIShowcase from '@/components/sections/AIShowcase';
 import EcommerceShowcase from '@/components/sections/EcommerceShowcase';
 import AutomationShowcase from '@/components/sections/AutomationShowcase';
 import DigitalShowcase from '@/components/sections/DigitalShowcase';
+import PortfolioCreditCard from '@/components/PortfolioCreditCard';
 import { Button } from '@/components/ui/button';
 import { Code2, Smartphone, BarChart3, Database, Brain, Zap, ArrowRight, Mail, Github, Linkedin, Lightbulb, Rocket, Shield, Users, Cpu, Palette, Layers, Target, Sparkles, ShoppingCart } from 'lucide-react';
 import '../cinematic-enhancements.css';
@@ -310,6 +311,11 @@ export default function Home() {
               </ul>
             </div>
           </div>
+          {/* Credit Card Badge — other sites can embed this */}
+          <div className="flex justify-center py-8">
+            <PortfolioCreditCard />
+          </div>
+
           <div className="pt-8 border-t border-white/5 flex flex-col md:row justify-between items-center gap-4">
             <p className="text-gray-600 text-xs">
               © 2026 ORTECH Digital Innovation. All rights reserved.

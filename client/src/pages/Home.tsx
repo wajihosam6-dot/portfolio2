@@ -5,8 +5,11 @@ import SectionHeader from '@/components/SectionHeader';
 import ScrollReveal from '@/components/ScrollReveal';
 import CTASection from '@/components/CTASection';
 import Timeline from '@/components/Timeline';
+import HorizontalScroll from '@/components/HorizontalScroll';
+import SkillOrbit from '@/components/SkillOrbit';
+import StackingCards from '@/components/StackingCards';
 import { Button } from '@/components/ui/button';
-import { Code2, Smartphone, BarChart3, Database, Brain, Zap, ArrowRight, Mail, Github, Linkedin, Lightbulb, Rocket, Shield, Users } from 'lucide-react';
+import { Code2, Smartphone, BarChart3, Database, Brain, Zap, ArrowRight, Mail, Github, Linkedin, Lightbulb, Rocket, Shield, Users, Cpu, Palette, Layers, Target, Sparkles } from 'lucide-react';
 
 /**
  * Premium Portfolio Homepage
@@ -423,6 +426,132 @@ export default function Home() {
             </ScrollReveal>
           </div>
         </div>
+      </section>
+
+      {/* Horizontal Scroll Section */}
+      <section className="py-32 bg-white">
+        <HorizontalScroll
+          title="Featured Projects"
+          subtitle="Explore our most impactful work and innovative solutions"
+          items={[
+            {
+              id: '1',
+              title: 'Analytics Dashboard',
+              subtitle: 'Real-time Data Visualization',
+              description: 'Advanced analytics platform with interactive charts, real-time data processing, and predictive insights',
+              color: '#0066FF',
+            },
+            {
+              id: '2',
+              title: 'Mobile Banking',
+              subtitle: 'Secure Financial Platform',
+              description: 'Enterprise-grade mobile banking solution with biometric security, instant transfers, and portfolio management',
+              color: '#7C3AED',
+            },
+            {
+              id: '3',
+              title: 'AI Assistant',
+              subtitle: 'Intelligent Automation',
+              description: 'Machine learning-powered assistant that learns user preferences and automates complex workflows',
+              color: '#10B981',
+            },
+            {
+              id: '4',
+              title: 'Cloud Platform',
+              subtitle: 'Infrastructure as Code',
+              description: 'Scalable cloud infrastructure with automatic deployment, monitoring, and disaster recovery',
+              color: '#F59E0B',
+            },
+          ]}
+        />
+      </section>
+
+      {/* Skill Orbit Section */}
+      <section className="py-32 bg-gradient-to-b from-blue-50 to-white">
+        <SkillOrbit
+          title="Technical Expertise"
+          subtitle="Interactive skill visualization with proficiency levels"
+          skills={[
+            { name: 'React', icon: Code2, color: '#61DAFB', level: 95 },
+            { name: 'TypeScript', icon: Cpu, color: '#3178C6', level: 90 },
+            { name: 'Node.js', icon: Zap, color: '#68A063', level: 88 },
+            { name: 'UI/UX Design', icon: Palette, color: '#FF6B6B', level: 92 },
+            { name: 'Web Performance', icon: Rocket, color: '#FF9F1C', level: 87 },
+            { name: 'Database Design', icon: Database, color: '#13C2C2', level: 85 },
+            { name: 'Cloud Architecture', icon: Layers, color: '#9C27B0', level: 83 },
+            { name: 'DevOps', icon: Target, color: '#FF6B35', level: 80 },
+          ]}
+        />
+      </section>
+
+      {/* Stacking Cards Section */}
+      <section className="py-32 bg-white">
+        <StackingCards
+          title="Our Process"
+          subtitle="Step-by-step approach to delivering excellence"
+          cards={[
+            {
+              id: '1',
+              title: 'Discovery & Strategy',
+              description: 'We begin by understanding your business goals, target audience, and unique challenges to create a tailored strategy.',
+              color: '#0066FF',
+              details: [
+                'Market research and competitor analysis',
+                'User persona development',
+                'Technical requirements assessment',
+                'Project roadmap creation',
+              ],
+            },
+            {
+              id: '2',
+              title: 'Design & Prototyping',
+              description: 'Our design team creates stunning, user-centric interfaces with interactive prototypes for validation.',
+              color: '#7C3AED',
+              details: [
+                'Wireframing and user flows',
+                'High-fidelity mockups',
+                'Interactive prototypes',
+                'Design system documentation',
+              ],
+            },
+            {
+              id: '3',
+              title: 'Development & Integration',
+              description: 'Expert developers build scalable, performant solutions using cutting-edge technologies and best practices.',
+              color: '#10B981',
+              details: [
+                'Full-stack development',
+                'API integration',
+                'Database optimization',
+                'Security implementation',
+              ],
+            },
+            {
+              id: '4',
+              title: 'Testing & Deployment',
+              description: 'Rigorous testing ensures quality, performance, and reliability before launching to production.',
+              color: '#F59E0B',
+              details: [
+                'QA testing and bug fixes',
+                'Performance optimization',
+                'Security audits',
+                'Smooth deployment',
+              ],
+            },
+            {
+              id: '5',
+              title: 'Support & Growth',
+              description: 'Ongoing support, monitoring, and optimization to ensure your solution continues to deliver value.',
+              color: '#EC4899',
+              details: [
+                '24/7 technical support',
+                'Performance monitoring',
+                'Regular updates',
+                'Continuous improvement',
+              ],
+            },
+          ]}
+        />
       </section>
 
       {/* Timeline Section */}

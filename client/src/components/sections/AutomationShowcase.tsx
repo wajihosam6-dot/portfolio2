@@ -9,6 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 interface AutomationFlow {
   id: number;
   name: string;
+  description?: string;
   steps: string[];
   color: string;
 }

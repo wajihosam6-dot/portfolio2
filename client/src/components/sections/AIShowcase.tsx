@@ -154,7 +154,7 @@ export const AIShowcase: React.FC<AIShowcaseProps> = ({ models }) => {
                       style={{ backgroundColor: model.color }}
                       initial={{ width: 0 }}
                       whileInView={{ width: `${model.accuracy}%` }}
-                      transition={{ duration: 1.5, delay: 0.3, ease: 'power3.out' }}
+                      transition={{ duration: 1.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     />
                   </div>
                 </div>

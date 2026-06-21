@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 interface ScrollItem {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   icon?: React.ReactNode;

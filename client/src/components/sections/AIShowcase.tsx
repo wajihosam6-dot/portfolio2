@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Brain, Zap, TrendingUp } from 'lucide-react';
+import { Brain, Zap, TrendingUp, Cpu } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,166 +23,159 @@ export const AIShowcase: React.FC<AIShowcaseProps> = ({ models }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
-
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    canvas.width = canvas.offsetWidth * 2;
+    canvas.height = canvas.offsetHeight * 2;
+    ctx.scale(2, 2);
 
-    const particles: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      color: string;
-      size: number;
-    }> = [];
-
-    // Create particles
-    models.forEach((model, index) => {
-      for (let i = 0; i < 5; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          color: model.color,
-          size: Math.random() * 2 + 1,
-        });
-      }
-    });
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((particle) => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-
-        ctx.fillStyle = particle.color;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
+    const particles: { x: number; y: number; vx: number; vy: number }[] = [];
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: Math.random() * canvas.offsetWidth,
+        y: Math.random() * canvas.offsetHeight,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
       });
+    }
 
-      // Draw connections
-      particles.forEach((p1, i) => {
-        particles.slice(i + 1).forEach((p2) => {
-          const dx = p1.x - p2.x;
-          const dy = p1.y - p2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+    let animId: number;
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.offsetWidth) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.offsetHeight) p.vy *= -1;
 
-          if (distance < 100) {
-            ctx.strokeStyle = p1.color;
-            ctx.globalAlpha = 0.2 * (1 - distance / 100);
+        particles.forEach((p2) => {
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
             ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
+            ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(236, 73, 153, ${0.08 * (1 - dist / 120)})`;
             ctx.stroke();
-            ctx.globalAlpha = 1;
           }
         });
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(236, 73, 153, 0.4)';
+        ctx.fill();
       });
-
-      requestAnimationFrame(animate);
+      animId = requestAnimationFrame(animate);
     };
-
     animate();
 
-    // Scroll-driven animation
-    gsap.to(containerRef.current, {
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top center',
-        end: 'bottom center',
-        scrub: 1,
-      },
-    });
+    const ctxGsap = gsap.context(() => {
+      const cards = containerRef.current?.querySelectorAll('[data-ai-card]');
+      cards?.forEach((card, i) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 50, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.8, delay: i * 0.2, ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 85%' } }
+        );
+      });
+    }, containerRef);
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      cancelAnimationFrame(animId);
+      ctxGsap.revert();
     };
   }, []);
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-blue-50">
-      <div className="container max-w-7xl mx-auto px-6">
-        <h2 className="text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-          AI & Machine Learning
-        </h2>
-        <p className="text-lg text-gray-600 mb-16">Advanced AI solutions and predictive analytics</p>
+    <section ref={containerRef} className="py-32 bg-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-pink-950/10 via-black to-transparent" />
 
-        {/* Particle Canvas */}
-        <div
-          ref={containerRef}
-          className="relative rounded-3xl overflow-hidden mb-12 bg-gradient-to-br from-blue-50 to-purple-50 border border-gray-200"
+      {/* Neural Network Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
+
+      <div className="container max-w-7xl mx-auto px-6 relative z-10">
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          <canvas
-            ref={canvasRef}
-            className="w-full h-96"
-            style={{ display: 'block' }}
-          />
-        </div>
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500/20 bg-pink-500/5 mb-6"
+            whileHover={{ scale: 1.05 }}
+          >
+            <Brain className="w-4 h-4 text-pink-400" />
+            <span className="text-pink-300 text-xs uppercase tracking-[0.2em] font-bold">AI & Machine Learning</span>
+          </motion.div>
+          <h2 className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+            Artificial <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">Intelligence</span>
+          </h2>
+          <p className="text-lg text-gray-400">Cutting-edge ML models and predictive analytics</p>
+        </motion.div>
 
-        {/* Models Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {models.map((model, index) => (
-            <div
-              key={model.id}
-              className="group relative overflow-hidden rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg"
-              style={{
-                background: `linear-gradient(135deg, ${model.color}10, ${model.color}05)`,
-              }}
-            >
-              {/* Icon */}
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                style={{ backgroundColor: `${model.color}25` }}
-              >
-                <Brain className="w-6 h-6" style={{ color: model.color }} />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {models.map((model) => (
+            <div key={model.id} data-ai-card className="group relative">
+              <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-sm p-8 h-full">
+                <motion.div
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
+                  style={{ backgroundColor: `${model.color}20` }}
+                  whileHover={{ rotate: 15, scale: 1.1 }}
+                >
+                  <Cpu className="w-7 h-7" style={{ color: model.color }} />
+                </motion.div>
 
-              {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                {model.name}
-              </h3>
-              <p className="text-gray-600 text-sm mb-4">{model.description}</p>
+                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
+                  {model.name}
+                </h3>
+                <p className="text-gray-400 text-sm mb-6">{model.description}</p>
 
-              {/* Accuracy Bar */}
-              <div className="mb-3">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-semibold text-gray-600">Accuracy</span>
-                  <span className="text-sm font-bold text-gray-900">{model.accuracy}%</span>
-                </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${model.accuracy}%`,
-                      backgroundColor: model.color,
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Metrics */}
-              <div className="flex gap-2">
-                <div className="flex-1 text-center p-2 rounded-lg bg-white/50">
-                  <div className="text-xs text-gray-600">Training</div>
-                  <div className="text-sm font-bold text-gray-900">Complete</div>
-                </div>
-                <div className="flex-1 text-center p-2 rounded-lg bg-white/50">
-                  <div className="text-xs text-gray-600">Status</div>
-                  <div className="text-sm font-bold" style={{ color: model.color }}>
-                    Active
+                {/* Accuracy Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Accuracy</span>
+                    <motion.span
+                      className="font-bold"
+                      style={{ color: model.color }}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                    >
+                      {model.accuracy}%
+                    </motion.span>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: model.color }}
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${model.accuracy}%` }}
+                      transition={{ duration: 1.5, delay: 0.3, ease: 'power3.out' }}
+                    />
                   </div>
                 </div>
+
+                {/* Metrics */}
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                  {[
+                    { label: 'Precision', value: `${model.accuracy - 2}%` },
+                    { label: 'Recall', value: `${model.accuracy - 5}%` },
+                  ].map((metric) => (
+                    <div key={metric.label} className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                      <div className="text-xs text-gray-500 mb-1">{metric.label}</div>
+                      <div className="text-lg font-bold text-white">{metric.value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Hover Glow */}
+                <div className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style={{ backgroundColor: model.color }}
+                />
               </div>
             </div>
           ))}

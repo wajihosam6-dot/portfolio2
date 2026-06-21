@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Layers, Database, Users, Zap } from 'lucide-react';
+import { Layers } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,146 +21,103 @@ interface ERPShowcaseProps {
 
 export const ERPShowcase: React.FC<ERPShowcaseProps> = ({ modules }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isoRef.current) return;
-
-    // Isometric rotation on scroll
-    gsap.to(isoRef.current, {
-      rotateX: 20,
-      rotateY: 45,
-      rotateZ: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top center',
-        end: 'bottom center',
-        scrub: 1,
-      },
-    });
-
-    // Animate modules
-    const moduleElements = isoRef.current.querySelectorAll('[data-module]');
-    moduleElements.forEach((module, index) => {
-      gsap.fromTo(
-        module,
-        { opacity: 0, scale: 0.5 },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          delay: index * 0.1,
-          ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 75%',
-            end: 'top 45%',
-            scrub: false,
-          },
-        }
-      );
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
+    const ctx = gsap.context(() => {
+      const items = containerRef.current?.querySelectorAll('[data-module]');
+      items?.forEach((item, i) => {
+        gsap.fromTo(item,
+          { opacity: 0, y: 40, rotateX: 20, scale: 0.9 },
+          { opacity: 1, y: 0, rotateX: 0, scale: 1, duration: 0.8, delay: i * 0.15, ease: 'power3.out',
+            scrollTrigger: { trigger: item, start: 'top 85%' } }
+        );
+      });
+    }, containerRef);
+    return () => ctx.revert();
   }, []);
 
-  const getPositionClass = (position: string) => {
-    const positions: Record<string, string> = {
-      'top-left': 'top-0 left-0',
-      'top-right': 'top-0 right-0',
-      'bottom-left': 'bottom-0 left-0',
-      'bottom-right': 'bottom-0 right-0',
-      'center': 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
-    };
-    return positions[position] || '';
+  const positionStyles: Record<string, string> = {
+    'top-left': 'top-0 left-0',
+    'top-right': 'top-0 right-0',
+    'bottom-left': 'bottom-0 left-0',
+    'bottom-right': 'bottom-0 right-0',
+    'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-blue-50 to-white">
+    <section ref={containerRef} className="py-32 bg-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-950/10 via-black to-transparent" />
+
       <div className="container max-w-7xl mx-auto px-6">
-        <h2 className="text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-          ERP Solutions
-        </h2>
-        <p className="text-lg text-gray-600 mb-16">Integrated enterprise resource planning systems</p>
-
-        {/* Isometric Container */}
-        <div
-          ref={containerRef}
-          className="relative h-96 flex items-center justify-center"
-          style={{ perspective: '1200px' }}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          <div
-            ref={isoRef}
-            className="relative w-80 h-80"
-            style={{
-              transformStyle: 'preserve-3d',
-            }}
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/5 mb-6"
+            whileHover={{ scale: 1.05 }}
           >
-            {modules.map((module) => (
-              <div
-                key={module.id}
-                data-module={module.id}
-                className={`absolute ${getPositionClass(module.position)} group`}
-              >
-                <div
-                  className="w-32 h-32 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-                  style={{
-                    background: `linear-gradient(135deg, ${module.color}30, ${module.color}10)`,
-                    border: `2px solid ${module.color}40`,
-                    backdropFilter: 'blur(10px)',
-                  }}
-                >
-                  <div className="text-4xl mb-2" style={{ color: module.color }}>
-                    {module.icon}
-                  </div>
-                  <div className="text-xs font-bold text-gray-900 text-center">{module.name}</div>
-                </div>
+            <Layers className="w-4 h-4 text-amber-400" />
+            <span className="text-amber-300 text-xs uppercase tracking-[0.2em] font-bold">ERP Solutions</span>
+          </motion.div>
+          <h2 className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+            Enterprise <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400">ERP</span>
+          </h2>
+          <p className="text-lg text-gray-400">Integrated business management solutions</p>
+        </motion.div>
 
-                {/* Tooltip */}
-                <div
-                  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 rounded-lg text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10"
-                  style={{ backgroundColor: module.color }}
-                >
-                  {module.description}
-                </div>
-              </div>
-            ))}
+        {/* Isometric Grid */}
+        <div className="relative max-w-4xl mx-auto h-[500px] md:h-[600px]">
+          {/* Connection Lines */}
+          <svg className="absolute inset-0 w-full h-full z-0 pointer-events-none" viewBox="0 0 400 500">
+            <motion.path
+              d="M200,250 L50,80 M200,250 L350,80 M200,250 L50,420 M200,250 L350,420"
+              stroke="rgba(255,255,255,0.05)"
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="6 6"
+              initial={{ pathLength: 0 }}
+              whileInView={{ pathLength: 1 }}
+              transition={{ duration: 2 }}
+            />
+          </svg>
 
-            {/* Center Connection Lines */}
-            <svg
-              className="absolute inset-0 w-full h-full"
-              style={{ opacity: 0.2 }}
-            >
-              <line x1="50%" y1="50%" x2="50%" y2="0%" stroke="#0066FF" strokeWidth="2" />
-              <line x1="50%" y1="50%" x2="100%" y2="50%" stroke="#0066FF" strokeWidth="2" />
-              <line x1="50%" y1="50%" x2="50%" y2="100%" stroke="#0066FF" strokeWidth="2" />
-              <line x1="50%" y1="50%" x2="0%" y2="50%" stroke="#0066FF" strokeWidth="2" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Module Details */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {modules.map((module) => (
+          {/* Modules */}
+          {modules.map((mod) => (
             <div
-              key={module.id}
-              className="p-6 rounded-2xl border border-gray-200 hover:border-gray-300 transition-colors group"
+              key={mod.id}
+              data-module
+              className={`absolute ${positionStyles[mod.position]} z-10`}
             >
-              <div className="flex items-start gap-4">
-                <div
-                  className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: `${module.color}20` }}
+              <motion.div
+                className="group relative w-44 h-44 md:w-52 md:h-52 rounded-3xl flex flex-col items-center justify-center p-6 cursor-pointer border border-white/5 bg-white/[0.02] backdrop-blur-sm text-center"
+                whileHover={{ scale: 1.1, y: -8 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 12 }}
+              >
+                <motion.div
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+                  style={{ backgroundColor: `${mod.color}20` }}
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
                 >
-                  <div style={{ color: module.color }}>{module.icon}</div>
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">{module.name}</h4>
-                  <p className="text-sm text-gray-600">{module.description}</p>
-                </div>
-              </div>
+                  <div style={{ color: mod.color }}>{mod.icon}</div>
+                </motion.div>
+                <h3 className="text-lg font-bold text-white mb-1 group-hover:text-amber-300 transition-colors">{mod.name}</h3>
+                <p className="text-xs text-gray-400">{mod.description}</p>
+
+                {/* Border glow */}
+                <div
+                  className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{ borderColor: `${mod.color}40` }}
+                />
+                <div
+                  className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style={{ backgroundColor: mod.color }}
+                />
+              </motion.div>
             </div>
           ))}
         </div>

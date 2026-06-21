@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Zap, Shield, Cpu } from 'lucide-react';
+import { Zap, Shield, Cpu, ArrowUpRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,157 +21,111 @@ interface DigitalShowcaseProps {
 export const DigitalShowcase: React.FC<DigitalShowcaseProps> = ({ services }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scanRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    // Scanning effect animation
-    if (scanRef.current) {
-      gsap.to(scanRef.current, {
-        y: '100%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top center',
-          end: 'bottom center',
-          scrub: 1,
-        },
+    const ctx = gsap.context(() => {
+      if (scanRef.current) {
+        gsap.to(scanRef.current, {
+          top: '100%', duration: 3, repeat: -1, ease: 'power1.inOut',
+          scrollTrigger: { trigger: containerRef.current, start: 'top center', end: 'bottom center', scrub: 1 },
+        });
+      }
+      const items = containerRef.current?.querySelectorAll('[data-digital]');
+      items?.forEach((item, i) => {
+        gsap.fromTo(item,
+          { opacity: 0, y: 50 },
+          { opacity: 1, y: 0, duration: 0.8, delay: i * 0.15, ease: 'power3.out',
+            scrollTrigger: { trigger: item, start: 'top 85%' } }
+        );
       });
-    }
-
-    // Animate service items
-    itemsRef.current.forEach((item, index) => {
-      gsap.fromTo(
-        item,
-        { opacity: 0, y: 50, rotateX: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          duration: 0.8,
-          delay: index * 0.1,
-          ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 80%',
-            end: 'top 50%',
-            scrub: false,
-          },
-        }
-      );
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
+    }, containerRef);
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="py-24 bg-gradient-to-b from-blue-50 to-white">
-      <div className="container max-w-7xl mx-auto px-6">
-        <h2 className="text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-          Digital Transformation
-        </h2>
-        <p className="text-lg text-gray-600 mb-16">Modernize your business with cutting-edge digital solutions</p>
+    <section ref={containerRef} className="py-32 bg-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/10 via-black to-transparent" />
 
-        {/* Scanning Effect Container */}
-        <div
-          ref={containerRef}
-          className="relative mb-16 rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 p-12"
+      {/* Scanning Line Effect */}
+      <div
+        ref={scanRef}
+        className="absolute left-0 right-0 h-px z-10 pointer-events-none"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent)',
+          boxShadow: '0 0 20px rgba(0,212,255,0.3), 0 0 60px rgba(0,212,255,0.1)',
+        }}
+      />
+
+      <div className="container max-w-7xl mx-auto px-6 relative z-10">
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          {/* Grid Background */}
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `linear-gradient(0deg, transparent 24%, #0066FF20 25%, #0066FF20 26%, transparent 27%, transparent 74%, #0066FF20 75%, #0066FF20 76%, transparent 77%, transparent),
-                               linear-gradient(90deg, transparent 24%, #0066FF20 25%, #0066FF20 26%, transparent 27%, transparent 74%, #0066FF20 75%, #0066FF20 76%, transparent 77%, transparent)`,
-              backgroundSize: '50px 50px',
-            }}
-          ></div>
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-500/20 bg-cyan-500/5 mb-6"
+            whileHover={{ scale: 1.05 }}
+          >
+            <Shield className="w-4 h-4 text-cyan-400" />
+            <span className="text-cyan-300 text-xs uppercase tracking-[0.2em] font-bold">Digital Marketing</span>
+          </motion.div>
+          <h2 className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+            Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Transformation</span>
+          </h2>
+          <p className="text-lg text-gray-400">Data-driven marketing strategies for growth</p>
+        </motion.div>
 
-          {/* Scanning Line */}
-          <div
-            ref={scanRef}
-            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-            style={{
-              boxShadow: '0 0 20px #0066FF, 0 0 40px #0066FF',
-            }}
-          ></div>
-
-          {/* Content */}
-          <div className="relative z-10 text-center">
-            <h3 className="text-3xl font-bold text-white mb-4">Advanced Technology Stack</h3>
-            <p className="text-gray-300 max-w-2xl mx-auto">
-              Leveraging the latest technologies and best practices to deliver transformative solutions
-            </p>
-
-            {/* Tech Icons */}
-            <div className="flex justify-center gap-8 mt-8">
-              <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
-                <Cpu className="w-8 h-8 text-blue-400" />
-              </div>
-              <div className="w-16 h-16 rounded-2xl bg-purple-500/20 flex items-center justify-center border border-purple-500/40">
-                <Zap className="w-8 h-8 text-purple-400" />
-              </div>
-              <div className="w-16 h-16 rounded-2xl bg-green-500/20 flex items-center justify-center border border-green-500/40">
-                <Shield className="w-8 h-8 text-green-400" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {services.map((service, index) => (
-            <div
-              key={service.id}
-              ref={(el) => {
-                itemsRef.current[index] = el;
-              }}
-              className="group relative overflow-hidden rounded-2xl p-8 border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg"
-              style={{
-                background: `linear-gradient(135deg, ${service.color}10, ${service.color}05)`,
-              }}
-            >
-              {/* Top Accent Line */}
-              <div
-                className="absolute top-0 left-0 w-0 h-1 group-hover:w-full transition-all duration-500"
-                style={{ backgroundColor: service.color }}
-              ></div>
+          {services.map((service) => (
+            <div key={service.id} data-digital className="group relative">
+              <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-sm p-8 h-full">
+                {/* Tech Grid Background */}
+                <div
+                  className="absolute inset-0 opacity-[0.03]"
+                  style={{
+                    backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                    backgroundSize: '30px 30px',
+                  }}
+                />
 
-              {/* Icon */}
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                style={{ backgroundColor: `${service.color}25` }}
-              >
-                <Zap className="w-6 h-6" style={{ color: service.color }} />
+                <motion.div
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 relative"
+                  style={{ backgroundColor: `${service.color}20` }}
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Cpu className="w-7 h-7" style={{ color: service.color }} />
+                </motion.div>
+
+                <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors relative">
+                  {service.title}
+                </h3>
+                <p className="text-gray-400 text-sm mb-6 relative">{service.description}</p>
+
+                {/* Features */}
+                <div className="space-y-3 relative">
+                  {service.features.map((feature, idx) => (
+                    <motion.div
+                      key={feature}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + idx * 0.1 }}
+                      whileHover={{ x: 4, borderColor: `${service.color}30` }}
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: service.color }} />
+                      <span className="text-sm text-gray-300">{feature}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Glow */}
+                <div className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style={{ backgroundColor: service.color }}
+                />
               </div>
-
-              {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                {service.title}
-              </h3>
-              <p className="text-gray-600 text-sm mb-4">{service.description}</p>
-
-              {/* Features */}
-              <div className="space-y-2">
-                {service.features.map((feature, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: service.color }}
-                    ></div>
-                    <span className="text-sm text-gray-700">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Hover Glow */}
-              <div
-                className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
-                style={{ backgroundColor: service.color, zIndex: -1 }}
-              ></div>
             </div>
           ))}
         </div>

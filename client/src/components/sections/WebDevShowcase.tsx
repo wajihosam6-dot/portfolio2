@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Code2, Globe, Layout, ArrowUpRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,127 +20,122 @@ interface WebDevShowcaseProps {
 
 export const WebDevShowcase: React.FC<WebDevShowcaseProps> = ({ projects }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    itemsRef.current.forEach((item, index) => {
-      if (!item) return;
-
-      const layers = item.querySelectorAll('[data-layer]');
-
-      gsap.fromTo(
-        item,
-        { opacity: 0, y: 100 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 80%',
-            end: 'top 50%',
-            scrub: false,
-          },
-        }
-      );
-
-      layers.forEach((layer, layerIndex) => {
-        gsap.to(layer, {
-          y: -50 * (layerIndex + 1),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top center',
-            end: 'bottom center',
-            scrub: 1,
-          },
+    const ctx = gsap.context(() => {
+      const items = containerRef.current?.querySelectorAll('[data-project]');
+      items?.forEach((item, i) => {
+        gsap.fromTo(
+          item,
+          { opacity: 0, y: 80, rotateX: 15 },
+          {
+            opacity: 1, y: 0, rotateX: 0, duration: 1,
+            delay: i * 0.2, ease: 'power4.out',
+            scrollTrigger: { trigger: item, start: 'top 85%' },
+          }
+        );
+        gsap.to(item, {
+          y: -30, ease: 'none',
+          scrollTrigger: { trigger: item, start: 'top center', end: 'bottom center', scrub: 1.5 },
         });
       });
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
+    }, containerRef);
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-blue-50">
-      <div className="container max-w-7xl mx-auto px-6">
-        <h2 className="text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-          Web Development
-        </h2>
-        <p className="text-lg text-gray-600 mb-16">Modern web solutions with stunning interfaces and seamless interactions</p>
+    <section ref={containerRef} className="py-32 bg-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/10 via-black to-transparent" />
+      <div className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
+          backgroundSize: '40px 40px',
+        }}
+      />
 
-        <div className="space-y-16">
+      <div className="container max-w-7xl mx-auto px-6 relative z-10">
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/20 bg-blue-500/5 mb-6"
+            whileHover={{ scale: 1.05 }}
+          >
+            <Code2 className="w-4 h-4 text-blue-400" />
+            <span className="text-blue-300 text-xs uppercase tracking-[0.2em] font-bold">Web Development</span>
+          </motion.div>
+          <h2 className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+            Modern <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Web Solutions</span>
+          </h2>
+          <p className="text-lg text-gray-400">Stunning interfaces with seamless interactions</p>
+        </motion.div>
+
+        <div className="space-y-20">
           {projects.map((project, index) => (
-            <div
-              key={project.id}
-              ref={(el) => {
-                itemsRef.current[index] = el;
-              }}
-              className="group relative overflow-hidden rounded-3xl"
-              style={{ perspective: '1200px' }}
-            >
-              {/* Base Layer */}
-              <div
-                data-layer="base"
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(135deg, ${project.color}15, ${project.color}05)`,
-                }}
-              ></div>
+            <div key={project.id} data-project className="group relative">
+              <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+                <div className="absolute inset-0 transition-all duration-500 group-hover:bg-white/[0.02]"
+                  style={{
+                    background: `linear-gradient(135deg, ${project.color}08, transparent)`,
+                  }}
+                />
 
-              {/* Grid Layer */}
-              <div
-                data-layer="grid"
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: `linear-gradient(0deg, transparent 24%, ${project.color}20 25%, ${project.color}20 26%, transparent 27%, transparent 74%, ${project.color}20 75%, ${project.color}20 76%, transparent 77%, transparent),
-                                   linear-gradient(90deg, transparent 24%, ${project.color}20 25%, ${project.color}20 26%, transparent 27%, transparent 74%, ${project.color}20 75%, ${project.color}20 76%, transparent 77%, transparent)`,
-                  backgroundSize: '50px 50px',
-                }}
-              ></div>
-
-              {/* Content Layer */}
-              <div data-layer="content" className="relative z-10 p-12">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-600">{project.description}</p>
-                  </div>
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"
-                    style={{ backgroundColor: `${project.color}25` }}
-                  >
-                    <span className="text-2xl font-bold" style={{ color: project.color }}>
-                      {index + 1}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-3 py-1 rounded-full text-sm font-semibold text-white"
-                      style={{ backgroundColor: project.color }}
+                <div className="relative p-8 md:p-12">
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <motion.div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                        style={{ backgroundColor: `${project.color}20` }}
+                        whileHover={{ rotate: 10, scale: 1.1 }}
+                      >
+                        <Globe className="w-6 h-6" style={{ color: project.color }} />
+                      </motion.div>
+                      <div>
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="text-sm font-bold text-white/40">0{index + 1}</span>
+                          <h3 className="text-3xl font-bold text-white group-hover:text-blue-300 transition-colors">
+                            {project.title}
+                          </h3>
+                        </div>
+                        <p className="text-gray-400">{project.description}</p>
+                      </div>
+                    </div>
+                    <motion.div
+                      className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/50 transition-all"
+                      whileHover={{ scale: 1.1, rotate: -45 }}
                     >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                      <ArrowUpRight className="w-5 h-5 text-gray-400 group-hover:text-blue-300 transition-colors" />
+                    </motion.div>
+                  </div>
 
-              {/* Hover Border */}
-              <div
-                className="absolute inset-0 rounded-3xl border-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ borderColor: project.color }}
-              ></div>
+                  {/* Tech Stack */}
+                  <div className="flex flex-wrap gap-3">
+                    {project.technologies.map((tech) => (
+                      <motion.span
+                        key={tech}
+                        className="px-4 py-2 rounded-full text-xs font-semibold text-white tracking-wider"
+                        style={{
+                          backgroundColor: `${project.color}20`,
+                          border: `1px solid ${project.color}30`,
+                        }}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                      >
+                        {tech}
+                      </motion.span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Hover Glow */}
+                <motion.div
+                  className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style={{ backgroundColor: project.color }}
+                />
+              </div>
             </div>
           ))}
         </div>

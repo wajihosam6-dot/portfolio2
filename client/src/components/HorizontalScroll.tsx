@@ -1,30 +1,23 @@
 import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ArrowRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface ScrollItem {
   id: string;
   title: string;
-  subtitle: string;
   description: string;
-  color: string;
-  icon?: string;
-  image?: string;
+  icon?: React.ReactNode;
 }
 
 interface HorizontalScrollProps {
   items: ScrollItem[];
-  title?: string;
-  subtitle?: string;
 }
 
-export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
-  items,
-  title,
-  subtitle,
-}) => {
+export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ items }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -41,143 +34,106 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
         trigger: containerRef.current,
         start: 'top center',
         end: `+=${scrollWidth}`,
-        scrub: 1,
-        markers: false,
+        scrub: 1.5,
+        invalidateOnRefresh: true,
       },
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
 
+  const colors = ['#0066FF', '#7C3AED', '#10B981', '#F59E0B'];
+
   return (
-    <section className="relative py-24 bg-gradient-to-b from-blue-50 to-white overflow-hidden">
-      {/* Header */}
-      {title && (
-        <div className="container max-w-7xl mx-auto px-6 mb-16">
-          <h2
-            className="text-5xl md:text-6xl font-bold text-gray-900 mb-4"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            {title}
-          </h2>
-          {subtitle && <p className="text-lg text-gray-600">{subtitle}</p>}
-        </div>
-      )}
+    <section className="relative py-32 bg-black overflow-hidden">
+      {/* Background grid */}
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px',
+        }}
+      />
 
-      {/* Horizontal Scroll Container */}
       <div ref={containerRef} className="relative overflow-hidden">
-        <div
-          ref={scrollRef}
-          className="flex gap-8 px-6"
-          style={{ width: 'fit-content' }}
-        >
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              className="group relative flex-shrink-0 w-96 h-96 rounded-3xl overflow-hidden cursor-pointer"
-              style={{
-                perspective: '1200px',
-              }}
-            >
-              {/* Background Layer */}
-              <div
-                className="absolute inset-0 transition-transform duration-500 group-hover:scale-110"
-                style={{
-                  background: `linear-gradient(135deg, ${item.color}30, ${item.color}10)`,
-                }}
+        <div ref={scrollRef} className="flex gap-8 px-6" style={{ width: 'fit-content' }}>
+          {items.map((item, index) => {
+            const color = colors[index % colors.length];
+            return (
+              <motion.div
+                key={item.id || index}
+                className="group relative flex-shrink-0 w-[28rem] h-[28rem] rounded-3xl overflow-hidden cursor-pointer border border-white/5 bg-white/[0.02] backdrop-blur-sm"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -8 }}
               >
-                {/* Animated Grid Background */}
-                <div className="absolute inset-0 opacity-20">
-                  <div
-                    className="absolute inset-0"
+                {/* Gradient Background */}
+                <div
+                  className="absolute inset-0 transition-all duration-500 group-hover:scale-110"
+                  style={{
+                    background: `linear-gradient(135deg, ${color}10, transparent)`,
+                  }}
+                >
+                  <div className="absolute inset-0 opacity-10"
                     style={{
-                      backgroundImage: `linear-gradient(0deg, transparent 24%, ${item.color}20 25%, ${item.color}20 26%, transparent 27%, transparent 74%, ${item.color}20 75%, ${item.color}20 76%, transparent 77%, transparent),
-                                       linear-gradient(90deg, transparent 24%, ${item.color}20 25%, ${item.color}20 26%, transparent 27%, transparent 74%, ${item.color}20 75%, ${item.color}20 76%, transparent 77%, transparent)`,
-                      backgroundSize: '50px 50px',
+                      backgroundImage: `radial-gradient(circle at 30% 50%, ${color}40 0%, transparent 60%)`,
                     }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="relative z-10 h-full flex flex-col justify-between p-8">
-                {/* Top Section */}
-                <div>
-                  <div
-                    className="inline-block px-4 py-2 rounded-full text-sm font-bold text-white mb-4"
-                    style={{ backgroundColor: item.color }}
-                  >
-                    {`0${index + 1}`}
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm">{item.subtitle}</p>
+                  />
                 </div>
 
-                {/* Bottom Section */}
-                <div>
-                  <p className="text-gray-700 text-sm leading-relaxed mb-4">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-4 transition-all">
-                    <span>View Project</span>
-                    <svg
-                      className="w-5 h-5 group-hover:translate-x-2 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                {/* Content */}
+                <div className="relative z-10 h-full flex flex-col justify-between p-10">
+                  <div>
+                    {/* Number */}
+                    <div
+                      className="inline-flex items-center justify-center w-14 h-14 rounded-2xl text-2xl font-black text-white mb-6"
+                      style={{ backgroundColor: `${color}25`, border: `1px solid ${color}30` }}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                      {`0${index + 1}`}
+                    </div>
+
+                    {/* Icon */}
+                    <div className="mb-4" style={{ color }}>
+                      {item.icon}
+                    </div>
+
+                    <h3 className="text-3xl font-bold text-white mb-3 group-hover:tracking-tighter transition-all"
+                      style={{ fontFamily: 'var(--font-display)' }}>
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="flex items-center gap-2 text-sm font-semibold transition-all"
+                    style={{ color }}>
+                    <span>Learn More</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                   </div>
                 </div>
-              </div>
 
-              {/* Hover Glow */}
-              <div
-                className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
-                style={{ backgroundColor: item.color, zIndex: -1 }}
-              ></div>
-
-              {/* Border Gradient */}
-              <div
-                className="absolute inset-0 rounded-3xl border-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  borderImage: `linear-gradient(135deg, ${item.color}40, ${item.color}10) 1`,
-                }}
-              ></div>
-            </div>
-          ))}
+                {/* Hover glow */}
+                <div
+                  className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-25 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style={{ backgroundColor: color }}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="container max-w-7xl mx-auto px-6 mt-12">
-        <div className="flex items-center justify-center gap-2 text-gray-600 text-sm">
-          <span>Scroll horizontally</span>
-          <svg
-            className="w-4 h-4 animate-bounce"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 5l7 7-7 7M5 5l7 7-7 7"
-            />
-          </svg>
-        </div>
-      </div>
+      {/* Scroll Hint */}
+      <motion.div
+        className="flex items-center justify-center gap-2 mt-12 text-gray-500 text-sm"
+        animate={{ opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <span className="uppercase tracking-[0.2em] text-xs">Scroll horizontally</span>
+        <ArrowRight className="w-4 h-4 animate-pulse" />
+      </motion.div>
     </section>
   );
 };

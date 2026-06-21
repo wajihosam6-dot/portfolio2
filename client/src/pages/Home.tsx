@@ -233,10 +233,10 @@ export default function Home() {
             align="center"
           />
           <Timeline 
-            events={[
-              { year: '2024', title: 'Global Expansion', description: 'Opened new offices in tech hubs worldwide.' },
-              { year: '2023', title: 'AI Integration', description: 'Launched enterprise-grade AI solutions.' },
-              { year: '2022', title: 'Company Founded', description: 'Started with a vision for digital excellence.' },
+            items={[
+              { year: '2024', title: 'Global Expansion', description: 'Opened new offices in tech hubs worldwide.', color: '#0066FF' },
+              { year: '2023', title: 'AI Integration', description: 'Launched enterprise-grade AI solutions.', color: '#7C3AED' },
+              { year: '2022', title: 'Company Founded', description: 'Started with a vision for digital excellence.', color: '#10B981' },
             ]}
           />
         </div>

@@ -4,6 +4,7 @@ import ProjectCard from '@/components/ProjectCard';
 import SectionHeader from '@/components/SectionHeader';
 import ScrollReveal from '@/components/ScrollReveal';
 import CTASection from '@/components/CTASection';
+import Timeline from '@/components/Timeline';
 import { Button } from '@/components/ui/button';
 import { Code2, Smartphone, BarChart3, Database, Brain, Zap, ArrowRight, Mail, Github, Linkedin, Lightbulb, Rocket, Shield, Users } from 'lucide-react';
 
@@ -421,6 +422,53 @@ export default function Home() {
               </div>
             </ScrollReveal>
           </div>
+        </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section className="py-32 bg-gradient-to-b from-white to-blue-50">
+        <div className="container max-w-7xl mx-auto px-6">
+          <Timeline
+            title="Our Journey"
+            subtitle="Milestones and achievements in our professional development"
+            items={[
+              {
+                year: '2021',
+                title: 'Career Beginning',
+                description: 'Began professional development career with focus on innovative solutions',
+                color: '#0066FF',
+                side: 'left',
+              },
+              {
+                year: '2022',
+                title: 'First Major Project',
+                description: 'Delivered enterprise solution that transformed business operations',
+                color: '#7C3AED',
+                side: 'right',
+              },
+              {
+                year: '2023',
+                title: 'Expanded Services',
+                description: 'Added AI and automation expertise to service portfolio',
+                color: '#10B981',
+                side: 'left',
+              },
+              {
+                year: '2024',
+                title: 'Global Recognition',
+                description: 'Achieved international acclaim for innovative digital solutions',
+                color: '#F59E0B',
+                side: 'right',
+              },
+              {
+                year: '2025',
+                title: 'Future Vision',
+                description: 'Pioneering next-generation technologies and digital transformation',
+                color: '#EC4899',
+                side: 'left',
+              },
+            ]}
+          />
         </div>
       </section>
 

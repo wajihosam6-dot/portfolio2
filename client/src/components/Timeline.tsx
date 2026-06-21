@@ -27,63 +27,55 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
     const line = lineRef.current;
     if (!wrapper || !line) return;
 
-    const wrapperH = wrapper.offsetHeight;
-    const viewportH = window.innerHeight;
-    const scrollRange = wrapperH + viewportH;
+    const cards = wrapper.querySelectorAll<HTMLDivElement>('[data-timeline-card]');
+    const dots = wrapper.querySelectorAll<HTMLDivElement>('[data-timeline-dot]');
 
-    // Line grows across the full wrapper height
+    // Line grows across the full wrapper
     gsap.to(line, {
       height: '100%',
       ease: 'none',
       scrollTrigger: {
         trigger: wrapper,
-        start: 'top center',
-        end: 'bottom center',
-        scrub: 0.6,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 0.4,
       },
     });
 
-    // Each card syncs to when the line reaches its position
-    const cards = wrapper.querySelectorAll<HTMLDivElement>('[data-timeline-card]');
-    const dots = wrapper.querySelectorAll<HTMLDivElement>('[data-timeline-dot]');
-
+    // Cards revealed directly by line progress
+    const wrapperH = wrapper.offsetHeight;
+    const cardH = 200;
     cards.forEach((card, i) => {
-      const cardTop = i * 550 + 50; // matches the style top value
-      const lineReachRatio = cardTop / wrapperH; // scroll progress where line reaches card
-      const startOffset = scrollRange * (lineReachRatio + 0.02); // 2% after line reaches
-      const endOffset = scrollRange * (lineReachRatio + 0.25); // full visible
-
+      const cardTop = i * 550 + 50;
       gsap.fromTo(
         card,
-        { opacity: 0, y: 50, scale: 0.9 },
+        { opacity: 0, y: 40, scale: 0.85, pointerEvents: 'none' as any },
         {
-          opacity: 1, y: 0, scale: 1, ease: 'power2.out',
+          opacity: 1, y: 0, scale: 1, pointerEvents: 'auto',
+          ease: 'power2.out',
           scrollTrigger: {
             trigger: wrapper,
-            start: `top+=${startOffset} center`,
-            end: `top+=${endOffset} center`,
-            scrub: 0.6,
+            start: `top bottom+=${cardTop}`,
+            end: `top bottom+=${cardTop + 250}`,
+            scrub: 0.4,
           },
         }
       );
     });
 
+    // Dots
     dots.forEach((dot, i) => {
       const cardTop = i * 550 + 50;
-      const lineReachRatio = cardTop / wrapperH;
-      const startOffset = scrollRange * (lineReachRatio + 0.04);
-      const endOffset = scrollRange * (lineReachRatio + 0.08);
-
       gsap.fromTo(
         dot,
         { scale: 0.3, opacity: 0 },
         {
-          scale: 1.2, opacity: 1, ease: 'back.out(2)',
+          scale: 1.3, opacity: 1, ease: 'back.out(2)',
           scrollTrigger: {
             trigger: wrapper,
-            start: `top+=${startOffset} center`,
-            end: `top+=${endOffset} center`,
-            scrub: 0.4,
+            start: `top bottom+=${cardTop + 30}`,
+            end: `top bottom+=${cardTop + 120}`,
+            scrub: 0.3,
           },
         }
       );
@@ -124,7 +116,6 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
           className="relative max-w-5xl mx-auto"
           style={{ height: `${items.length * 550}px` }}
         >
-          {/* Vertical Line */}
           <div
             ref={lineRef}
             className="absolute left-1/2 top-0 w-[2px] h-0 -translate-x-1/2 z-0"
@@ -134,7 +125,6 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
             }}
           />
 
-          {/* Timeline Items */}
           <div className="relative z-10">
             {items.map((item, index) => {
               const isLeft = index % 2 === 0;

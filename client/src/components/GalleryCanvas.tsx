@@ -10,162 +10,183 @@ interface GalleryCanvasProps {
 }
 
 /**
- * GalleryCanvas Component - Cinematic 3D Edition
- * - Advanced Digital Showroom with dynamic lighting
- * - Particle system reacting to mouse and scroll
- * - Custom shaders for holographic card effects
- * - Smooth cinematic camera transitions
+ * Luxury Abstract Monolith - Premium 3D Hero
+ * Design: Floating crystalline structure with luxury materials
+ * - Custom shaders for glass and metal effects
+ * - Fluid mouse interactions
+ * - Cinematic lighting and reflections
  */
+
+const vertexShader = `
+  varying vec3 vPosition;
+  varying vec3 vNormal;
+  varying vec2 vUv;
+  
+  void main() {
+    vPosition = position;
+    vNormal = normalize(normalMatrix * normal);
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = `
+  uniform vec3 uColor;
+  uniform float uTime;
+  uniform float uMouseX;
+  uniform float uMouseY;
+  
+  varying vec3 vPosition;
+  varying vec3 vNormal;
+  varying vec2 vUv;
+  
+  void main() {
+    vec3 normal = normalize(vNormal);
+    vec3 viewDir = normalize(cameraPosition - vPosition);
+    
+    // Fresnel effect
+    float fresnel = pow(1.0 - dot(normal, viewDir), 3.0);
+    
+    // Metallic reflection
+    vec3 reflection = reflect(-viewDir, normal);
+    float metallic = mix(0.3, 0.9, fresnel);
+    
+    // Color with iridescence
+    vec3 color = mix(uColor, vec3(0.0, 0.4, 1.0), fresnel * 0.5);
+    
+    // Add shimmer based on time
+    float shimmer = sin(uTime + vPosition.x * 5.0) * 0.1 + 0.5;
+    color += vec3(0.0, 0.2, 0.4) * shimmer * fresnel;
+    
+    // Final output
+    gl_FragColor = vec4(color, 0.85 + fresnel * 0.15);
+  }
+`;
 
 export const GalleryCanvas: React.FC<GalleryCanvasProps> = ({ onSceneReady }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const particlesRef = useRef<THREE.Points | null>(null);
+  const monolithRef = useRef<THREE.Group | null>(null);
   const animationIdRef = useRef<number | undefined>(undefined);
-  const cardsRef = useRef<THREE.Mesh[]>([]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene setup
+    // Scene Setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0a0a); // Deep dark for cinematic feel
-    scene.fog = new THREE.FogExp2(0x0a0a0a, 0.05);
+    scene.background = new THREE.Color(0x000000);
     sceneRef.current = scene;
 
-    // Camera setup
+    // Camera Setup
     const camera = new THREE.PerspectiveCamera(
-      60,
+      50,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.position.set(0, 1, 8);
+    camera.position.set(0, 0, 8);
     cameraRef.current = camera;
 
-    // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
+    // Renderer Setup
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
       alpha: true,
       powerPreference: 'high-performance'
     });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.5;
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Lighting setup - Dramatic Cinematic Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+    // Lighting - Luxury Setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
 
-    const mainLight = new THREE.SpotLight(0xffffff, 2);
-    mainLight.position.set(5, 10, 5);
-    mainLight.castShadow = true;
-    mainLight.shadow.mapSize.width = 1024;
-    mainLight.shadow.mapSize.height = 1024;
-    mainLight.angle = 0.5;
-    mainLight.penumbra = 0.5;
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2);
+    mainLight.position.set(5, 8, 5);
     scene.add(mainLight);
 
-    // Electric Blue Accents (ORTECH Brand)
-    const blueLight1 = new THREE.PointLight(0x0066FF, 2, 20);
-    blueLight1.position.set(-5, 2, 2);
-    scene.add(blueLight1);
+    const blueLight = new THREE.PointLight(0x0066FF, 3, 50);
+    blueLight.position.set(-8, 3, 0);
+    scene.add(blueLight);
 
-    const blueLight2 = new THREE.PointLight(0x0066FF, 1.5, 20);
-    blueLight2.position.set(5, -2, -2);
-    scene.add(blueLight2);
+    const purpleLight = new THREE.PointLight(0x6600FF, 2, 50);
+    purpleLight.position.set(8, -3, 0);
+    scene.add(purpleLight);
 
-    // Particle System (Star Dust)
-    const particlesCount = 2000;
-    const posArray = new Float32Array(particlesCount * 3);
-    for(let i=0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 40;
-    }
-    const particlesGeometry = new THREE.BufferGeometry();
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.02,
-      color: 0x0066FF,
+    // Create Luxury Monolith Group
+    const monolith = new THREE.Group();
+    monolithRef.current = monolith;
+    scene.add(monolith);
+
+    // Custom Shader Material
+    const shaderMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms: {
+        uColor: { value: new THREE.Color(0x0066FF) },
+        uTime: { value: 0 },
+        uMouseX: { value: 0 },
+        uMouseY: { value: 0 }
+      },
       transparent: true,
-      opacity: 0.6,
+      side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending
     });
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-    particlesRef.current = particlesMesh;
 
-    // Showroom Environment (Floor & Walls)
-    const floorGeo = new THREE.PlaneGeometry(50, 50);
-    const floorMat = new THREE.MeshStandardMaterial({ 
-      color: 0x111111,
-      roughness: 0.1,
-      metalness: 0.8
-    });
-    const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -2;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
-    // Grid on floor for tech feel
-    const grid = new THREE.GridHelper(50, 50, 0x0066FF, 0x222222);
-    grid.position.y = -1.99;
-    scene.add(grid);
-
-    // Portfolio Cards with Holographic Effect
-    const cardPositions = [
-      { x: -6, y: 1.5, z: -2 },
-      { x: 0, y: 1.5, z: -2 },
-      { x: 6, y: 1.5, z: -2 },
-      { x: -6, y: 1.5, z: 4 },
-      { x: 0, y: 1.5, z: 4 },
-      { x: 6, y: 1.5, z: 4 },
+    // Create Main Crystalline Structure
+    const geometries = [
+      new THREE.IcosahedronGeometry(1.5, 4),
+      new THREE.OctahedronGeometry(1.2, 3),
+      new THREE.TetrahedronGeometry(1, 2),
+      new THREE.BoxGeometry(0.8, 2, 0.8)
     ];
 
-    const cardGeo = new THREE.BoxGeometry(3.5, 4.5, 0.1);
-    const cardMat = new THREE.MeshStandardMaterial({
-      color: 0x1a1a1a,
-      roughness: 0.2,
-      metalness: 0.9,
-      emissive: 0x0066FF,
-      emissiveIntensity: 0.1
+    geometries.forEach((geo, i) => {
+      const mesh = new THREE.Mesh(geo, shaderMaterial.clone());
+      mesh.position.set(
+        Math.sin(i * Math.PI / 2) * 0.5,
+        Math.cos(i * Math.PI / 2) * 0.5,
+        Math.sin(i * Math.PI / 4) * 0.3
+      );
+      mesh.rotation.set(i * 0.3, i * 0.4, i * 0.2);
+      (mesh as any).originalRotation = mesh.rotation.clone();
+      monolith.add(mesh);
     });
 
-    cardPositions.forEach((pos, i) => {
-      const card = new THREE.Mesh(cardGeo, cardMat);
-      card.position.set(pos.x, pos.y, pos.z);
-      card.castShadow = true;
-      card.receiveShadow = true;
-      (card as any).originalY = pos.y;
-      (card as any).originalZ = pos.z;
-      (card as any).index = i;
-      scene.add(card);
-      cardsRef.current.push(card);
-
-      // Add a glowing border
-      const borderGeo = new THREE.BoxGeometry(3.6, 4.6, 0.05);
-      const borderMat = new THREE.MeshBasicMaterial({ color: 0x0066FF, transparent: true, opacity: 0.3 });
-      const border = new THREE.Mesh(borderGeo, borderMat);
-      border.position.set(pos.x, pos.y, pos.z - 0.05);
-      scene.add(border);
+    // Add Floating Particles Around Monolith
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 500;
+    const posArray = new Float32Array(particlesCount * 3);
+    
+    for (let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 20;
+    }
+    
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.05,
+      color: 0x0066FF,
+      transparent: true,
+      opacity: 0.4,
+      blending: THREE.AdditiveBlending
     });
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
 
-    // Mouse Interaction
+    // Mouse Move Handler
     const handleMouseMove = (event: MouseEvent) => {
-      mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      mouseRef.current.targetX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseRef.current.targetY = -(event.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Window Resize
+    // Window Resize Handler
     const handleResize = () => {
       if (!containerRef.current) return;
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
@@ -180,22 +201,32 @@ export const GalleryCanvas: React.FC<GalleryCanvasProps> = ({ onSceneReady }) =>
       animationIdRef.current = requestAnimationFrame(animate);
       time += 0.01;
 
-      // Parallax effect with mouse
-      camera.position.x += (mouseRef.current.x * 2 - camera.position.x) * 0.05;
-      camera.position.y += (mouseRef.current.y * 1 + 1 - camera.position.y) * 0.05;
-      camera.lookAt(0, 1, 0);
+      // Smooth mouse following
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.1;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.1;
 
-      // Float cards
-      cardsRef.current.forEach((card, i) => {
-        card.position.y = (card as any).originalY + Math.sin(time + i) * 0.2;
-        card.rotation.y = Math.sin(time * 0.5 + i) * 0.1;
-      });
+      // Rotate monolith based on mouse
+      if (monolith) {
+        monolith.rotation.x = mouseRef.current.y * 0.5;
+        monolith.rotation.y = mouseRef.current.x * 0.5;
 
-      // Animate particles
-      if(particlesRef.current) {
-        particlesRef.current.rotation.y = time * 0.05;
-        particlesRef.current.rotation.x = time * 0.02;
+        // Subtle floating animation
+        monolith.position.y = Math.sin(time * 0.5) * 0.3;
+        monolith.position.x = Math.cos(time * 0.3) * 0.2;
       }
+
+      // Rotate particles
+      particles.rotation.x += 0.0001;
+      particles.rotation.y += 0.0002;
+
+      // Update shader uniforms
+      monolith.children.forEach((child: any) => {
+        if (child.material.uniforms) {
+          child.material.uniforms.uTime.value = time;
+          child.material.uniforms.uMouseX.value = mouseRef.current.x;
+          child.material.uniforms.uMouseY.value = mouseRef.current.y;
+        }
+      });
 
       renderer.render(scene, camera);
     };
@@ -207,19 +238,13 @@ export const GalleryCanvas: React.FC<GalleryCanvasProps> = ({ onSceneReady }) =>
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1.5,
+        scrub: 2,
       }
     });
 
-    tl.to(camera.position, { z: 15, y: 5, x: 0, ease: 'none' });
-    cardsRef.current.forEach((card, i) => {
-      tl.to(card.position, { 
-        z: (card as any).originalZ + 5, 
-        y: (card as any).originalY + 2,
-        ease: 'none' 
-      }, 0);
-      tl.to(card.rotation, { x: 0.5, y: 0.5, ease: 'none' }, 0);
-    });
+    tl.to(camera.position, { z: 15, y: 3, ease: 'none' });
+    tl.to(monolith.rotation, { x: Math.PI * 2, y: Math.PI, z: Math.PI * 0.5, ease: 'none' }, 0);
+    tl.to(monolith.position, { y: 5, ease: 'none' }, 0);
 
     // Cleanup
     return () => {
@@ -227,12 +252,14 @@ export const GalleryCanvas: React.FC<GalleryCanvasProps> = ({ onSceneReady }) =>
       window.removeEventListener('resize', handleResize);
       if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
       renderer.dispose();
-      if (containerRef.current) containerRef.current.innerHTML = '';
+      if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
     };
   }, [onSceneReady]);
 
   return (
-    <div ref={containerRef} className="w-full h-screen bg-black overflow-hidden relative" />
+    <div ref={containerRef} className="w-full h-screen bg-black overflow-hidden" />
   );
 };
 

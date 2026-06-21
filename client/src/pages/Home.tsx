@@ -109,8 +109,8 @@ export default function Home() {
       {/* 2. Web Development Showcase */}
       <WebDevShowcase 
         projects={[
-          { id: 1, title: 'E-Commerce Platform', description: 'Modern e-commerce solution', category: 'Web', color: '#0066FF', features: ['Real-time', 'Secure'], tech: ['React', 'Node'] },
-          { id: 2, title: 'SaaS Dashboard', description: 'Enterprise platform', category: 'Web', color: '#0066FF', features: ['Multi-tenant', 'Analytics'], tech: ['Next.js', 'Supabase'] }
+          { id: 1, title: 'E-Commerce Platform', description: 'Modern e-commerce solution', category: 'Web', color: '#0066FF', technologies: ['React', 'Node'] },
+          { id: 2, title: 'SaaS Dashboard', description: 'Enterprise platform', category: 'Web', color: '#0066FF', technologies: ['Next.js', 'Supabase'] }
         ]} 
       />
 
@@ -204,8 +204,8 @@ export default function Home() {
       {/* 9. Automation & n8n Showcase */}
       <AutomationShowcase
         flows={[
-          { id: 1, name: 'Lead Automation', description: 'Automated sales funnel and CRM sync', color: '#FF6B35', nodes: 12 },
-          { id: 2, name: 'Data Pipeline', description: 'Real-time ETL and data synchronization', color: '#0066FF', nodes: 8 },
+          { id: 1, name: 'Lead Automation', description: 'Automated sales funnel and CRM sync', color: '#FF6B35', steps: ['Capture', 'Qualify', 'Nurture', 'Convert', 'Analyze'] },
+          { id: 2, name: 'Data Pipeline', description: 'Real-time ETL and data synchronization', color: '#0066FF', steps: ['Extract', 'Transform', 'Load', 'Validate'] },
         ]}
       />
 
@@ -258,9 +258,9 @@ export default function Home() {
       <section className="bg-black py-24">
         <StackingCards 
           cards={[
-            { title: 'Innovation First', description: 'We push boundaries with cutting-edge tech.', color: '#0066FF' },
-            { title: 'User Centric', description: 'Design that speaks to your audience.', color: '#7C3AED' },
-            { title: 'Scale Ready', description: 'Solutions built for future growth.', color: '#10B981' },
+            { id: '1', title: 'Innovation First', description: 'We push boundaries with cutting-edge tech.', color: '#0066FF' },
+            { id: '2', title: 'User Centric', description: 'Design that speaks to your audience.', color: '#7C3AED' },
+            { id: '3', title: 'Scale Ready', description: 'Solutions built for future growth.', color: '#10B981' },
           ]}
         />
       </section>

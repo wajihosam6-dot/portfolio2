@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import GalleryCanvas from './GalleryCanvas';
 import { ChevronDown, Sparkles, ArrowRight } from 'lucide-react';
 import '../cinematic-enhancements.css';

@@ -1,1 +1,322 @@
-import React, { useEffect, useRef, useState } from 'react';\nimport { motion } from 'motion/react';\nimport gsap from 'gsap';\nimport { ScrollTrigger } from 'gsap/ScrollTrigger';\nimport {\n  Code2,\n  Database,\n  Zap,\n  Brain,\n  Palette,\n  Layers,\n  Target,\n  Cpu,\n} from 'lucide-react';\nimport '../cinematic-enhancements.css';\n\ngsap.registerPlugin(ScrollTrigger);\n\ninterface Skill {\n  id: number;\n  name: string;\n  icon: React.ReactNode;\n  proficiency: number;\n  color: string;\n  description: string;\n}\n\nconst skills: Skill[] = [\n  {\n    id: 1,\n    name: 'Frontend',\n    icon: <Code2 className=\"w-6 h-6\" />,\n    proficiency: 95,\n    color: '#0066FF',\n    description: 'React, Vue, Angular, TypeScript',\n  },\n  {\n    id: 2,\n    name: 'Backend',\n    icon: <Database className=\"w-6 h-6\" />,\n    proficiency: 90,\n    color: '#10B981',\n    description: 'Node.js, Python, PostgreSQL',\n  },\n  {\n    id: 3,\n    name: 'DevOps',\n    icon: <Zap className=\"w-6 h-6\" />,\n    proficiency: 85,\n    color: '#F59E0B',\n    description: 'Docker, Kubernetes, AWS',\n  },\n  {\n    id: 4,\n    name: 'AI/ML',\n    icon: <Brain className=\"w-6 h-6\" />,\n    proficiency: 80,\n    color: '#EC4899',\n    description: 'TensorFlow, PyTorch, NLP',\n  },\n  {\n    id: 5,\n    name: 'Design',\n    icon: <Palette className=\"w-6 h-6\" />,\n    proficiency: 88,\n    color: '#8B5CF6',\n    description: 'UI/UX, Figma, Animation',\n  },\n  {\n    id: 6,\n    name: '3D Graphics',\n    icon: <Layers className=\"w-6 h-6\" />,\n    proficiency: 82,\n    color: '#06B6D4',\n    description: 'Three.js, WebGL, Blender',\n  },\n];\n\n/**\n * Enhanced Skill Orbit Component\n * Features:\n * - 3D orbital animation with GSAP\n * - Scroll-triggered rotation\n * - Magnetic hover interactions\n * - Glassmorphism skill cards\n * - Proficiency indicators with animations\n */\n\nexport const SkillOrbitEnhanced: React.FC = () => {\n  const containerRef = useRef<HTMLDivElement>(null);\n  const orbitRef = useRef<HTMLDivElement>(null);\n  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });\n  const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);\n\n  useEffect(() => {\n    if (!orbitRef.current) return;\n\n    // Scroll-triggered rotation\n    gsap.to(orbitRef.current, {\n      rotation: 360,\n      scrollTrigger: {\n        trigger: containerRef.current,\n        start: 'top center',\n        end: 'bottom center',\n        scrub: 1,\n        markers: false,\n      },\n    });\n\n    return () => {\n      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());\n    };\n  }, []);\n\n  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {\n    if (!containerRef.current) return;\n\n    const rect = containerRef.current.getBoundingClientRect();\n    const x = (e.clientX - rect.left - rect.width / 2) * 0.1;\n    const y = (e.clientY - rect.top - rect.height / 2) * 0.1;\n\n    setMousePosition({ x, y });\n  };\n\n  const calculatePosition = (index: number, total: number) => {\n    const angle = (index / total) * Math.PI * 2;\n    const radius = 150;\n    const x = Math.cos(angle) * radius;\n    const y = Math.sin(angle) * radius;\n    return { x, y };\n  };\n\n  return (\n    <section className=\"relative py-20 px-6 overflow-hidden\">\n      {/* Aurora Background */}\n      <div className=\"absolute inset-0 aurora-background pointer-events-none\"></div>\n\n      {/* Background Gradient */}\n      <div className=\"absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black pointer-events-none\"></div>\n\n      {/* Content */}\n      <div className=\"relative z-10 max-w-6xl mx-auto\">\n        {/* Header */}\n        <motion.div\n          className=\"text-center mb-16\"\n          initial={{ opacity: 0, y: 20 }}\n          whileInView={{ opacity: 1, y: 0 }}\n          transition={{ duration: 0.6 }}\n          viewport={{ once: true }}\n        >\n          <h2 className=\"text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter\">\n            Technical Expertise\n          </h2>\n          <p className=\"text-gray-400 text-lg max-w-2xl mx-auto\">\n            A comprehensive skill set spanning modern web technologies, cloud\n            infrastructure, and cutting-edge AI solutions.\n          </p>\n        </motion.div>\n\n        {/* Orbit Container */}\n        <div\n          ref={containerRef}\n          className=\"relative h-[500px] flex items-center justify-center\"\n          onMouseMove={handleMouseMove}\n        >\n          {/* Central Core */}\n          <motion.div\n            className=\"absolute w-24 h-24 rounded-full glass-morphism flex items-center justify-center z-20\"\n            animate={{\n              x: mousePosition.x,\n              y: mousePosition.y,\n            }}\n            transition={{ type: 'spring', stiffness: 300, damping: 30 }}\n          >\n            <div className=\"text-center\">\n              <Cpu className=\"w-8 h-8 text-blue-400 mx-auto mb-2\" />\n              <p className=\"text-xs font-bold text-blue-300 uppercase tracking-widest\">\n                Skills\n              </p>\n            </div>\n          </motion.div>\n\n          {/* Orbital Ring */}\n          <div className=\"absolute w-80 h-80 border border-blue-500/20 rounded-full\"></div>\n          <div className=\"absolute w-96 h-96 border border-blue-500/10 rounded-full\"></div>\n\n          {/* Orbiting Skills */}\n          <div\n            ref={orbitRef}\n            className=\"absolute w-80 h-80\"\n            style={{\n              perspective: '1000px',\n            }}\n          >\n            {skills.map((skill, index) => {\n              const position = calculatePosition(index, skills.length);\n              const isHovered = hoveredSkill === skill.id;\n\n              return (\n                <motion.div\n                  key={skill.id}\n                  className=\"absolute w-24 h-24\"\n                  style={{\n                    left: '50%',\n                    top: '50%',\n                    x: position.x,\n                    y: position.y,\n                    marginLeft: '-48px',\n                    marginTop: '-48px',\n                  }}\n                  initial={{ opacity: 0, scale: 0 }}\n                  whileInView={{ opacity: 1, scale: 1 }}\n                  transition={{\n                    duration: 0.6,\n                    delay: index * 0.1,\n                  }}\n                  viewport={{ once: true }}\n                  onMouseEnter={() => setHoveredSkill(skill.id)}\n                  onMouseLeave={() => setHoveredSkill(null)}\n                >\n                  <motion.button\n                    className=\"w-full h-full rounded-full glass-morphism flex flex-col items-center justify-center border-2 transition-all\"\n                    style={{\n                      borderColor: isHovered ? skill.color : `${skill.color}40`,\n                      boxShadow: isHovered\n                        ? `0 0 30px ${skill.color}40`\n                        : 'none',\n                    }}\n                    whileHover={{\n                      scale: 1.15,\n                      z: 10,\n                    }}\n                    whileTap={{ scale: 0.95 }}\n                  >\n                    <div style={{ color: skill.color }}>{skill.icon}</div>\n                    <p className=\"text-xs font-bold text-white mt-1 text-center\">\n                      {skill.name}\n                    </p>\n                  </motion.button>\n\n                  {/* Tooltip */}\n                  {isHovered && (\n                    <motion.div\n                      className=\"absolute top-full mt-4 left-1/2 -translate-x-1/2 glass-morphism rounded-lg p-3 w-48 z-50\"\n                      initial={{ opacity: 0, y: -10 }}\n                      animate={{ opacity: 1, y: 0 }}\n                      exit={{ opacity: 0, y: -10 }}\n                      transition={{ duration: 0.2 }}\n                    >\n                      <p className=\"text-xs font-semibold text-blue-300 mb-2\">\n                        {skill.description}\n                      </p>\n                      <div className=\"w-full bg-gray-700/50 rounded-full h-2 overflow-hidden\">\n                        <motion.div\n                          className=\"h-full rounded-full\"\n                          style={{ backgroundColor: skill.color }}\n                          initial={{ width: 0 }}\n                          animate={{ width: `${skill.proficiency}%` }}\n                          transition={{ duration: 0.6, delay: 0.1 }}\n                        />\n                      </div>\n                      <p className=\"text-xs text-gray-400 mt-2\">\n                        {skill.proficiency}% Proficiency\n                      </p>\n                    </motion.div>\n                  )}\n                </motion.div>\n              );\n            })}\n          </div>\n        </div>\n\n        {/* Proficiency Grid */}\n        <motion.div\n          className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-20\"\n          initial={{ opacity: 0, y: 20 }}\n          whileInView={{ opacity: 1, y: 0 }}\n          transition={{ duration: 0.6, delay: 0.3 }}\n          viewport={{ once: true }}\n        >\n          {skills.map((skill, index) => (\n            <motion.div\n              key={skill.id}\n              className=\"glass-morphism rounded-lg p-6\"\n              initial={{ opacity: 0, y: 20 }}\n              whileInView={{ opacity: 1, y: 0 }}\n              transition={{\n                duration: 0.5,\n                delay: 0.4 + index * 0.05,\n              }}\n              viewport={{ once: true }}\n              whileHover={{ y: -4 }}\n            >\n              <div className=\"flex items-center gap-3 mb-4\">\n                <div style={{ color: skill.color }}>{skill.icon}</div>\n                <h3 className=\"text-lg font-bold text-white\">{skill.name}</h3>\n              </div>\n              <p className=\"text-sm text-gray-400 mb-4\">{skill.description}</p>\n              <div className=\"flex items-center gap-3\">\n                <div className=\"flex-1 bg-gray-700/50 rounded-full h-2 overflow-hidden\">\n                  <motion.div\n                    className=\"h-full rounded-full\"\n                    style={{ backgroundColor: skill.color }}\n                    initial={{ width: 0 }}\n                    whileInView={{ width: `${skill.proficiency}%` }}\n                    transition={{ duration: 0.8, delay: 0.5 + index * 0.05 }}\n                    viewport={{ once: true }}\n                  />\n                </div>\n                <span className=\"text-sm font-bold text-gray-400 w-12 text-right\">\n                  {skill.proficiency}%\n                </span>\n              </div>\n            </motion.div>\n          ))}\n        </motion.div>\n      </div>\n    </section>\n  );\n};\n\nexport default SkillOrbitEnhanced;\n
+import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+  Code2,
+  Database,
+  Zap,
+  Brain,
+  Palette,
+  Layers,
+  Target,
+  Cpu,
+} from 'lucide-react';
+import '../cinematic-enhancements.css';
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface Skill {
+  id: number;
+  name: string;
+  icon: React.ReactNode;
+  proficiency: number;
+  color: string;
+  description: string;
+}
+
+const skills: Skill[] = [
+  {
+    id: 1,
+    name: 'Frontend',
+    icon: <Code2 className="w-6 h-6" />,
+    proficiency: 95,
+    color: '#0066FF',
+    description: 'React, Vue, Angular, TypeScript',
+  },
+  {
+    id: 2,
+    name: 'Backend',
+    icon: <Database className="w-6 h-6" />,
+    proficiency: 90,
+    color: '#10B981',
+    description: 'Node.js, Python, PostgreSQL',
+  },
+  {
+    id: 3,
+    name: 'DevOps',
+    icon: <Zap className="w-6 h-6" />,
+    proficiency: 85,
+    color: '#F59E0B',
+    description: 'Docker, Kubernetes, AWS',
+  },
+  {
+    id: 4,
+    name: 'AI/ML',
+    icon: <Brain className="w-6 h-6" />,
+    proficiency: 80,
+    color: '#EC4899',
+    description: 'TensorFlow, PyTorch, NLP',
+  },
+  {
+    id: 5,
+    name: 'Design',
+    icon: <Palette className="w-6 h-6" />,
+    proficiency: 88,
+    color: '#8B5CF6',
+    description: 'UI/UX, Figma, Animation',
+  },
+  {
+    id: 6,
+    name: '3D Graphics',
+    icon: <Layers className="w-6 h-6" />,
+    proficiency: 82,
+    color: '#06B6D4',
+    description: 'Three.js, WebGL, Blender',
+  },
+];
+
+/**
+ * Enhanced Skill Orbit Component
+ * Features:
+ * - 3D orbital animation with GSAP
+ * - Scroll-triggered rotation
+ * - Magnetic hover interactions
+ * - Glassmorphism skill cards
+ * - Proficiency indicators with animations
+ */
+
+export const SkillOrbitEnhanced: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const orbitRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!orbitRef.current) return;
+
+    // Scroll-triggered rotation
+    gsap.to(orbitRef.current, {
+      rotation: 360,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top center',
+        end: 'bottom center',
+        scrub: 1,
+        markers: false,
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.1;
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.1;
+
+    setMousePosition({ x, y });
+  };
+
+  const calculatePosition = (index: number, total: number) => {
+    const angle = (index / total) * Math.PI * 2;
+    const radius = 150;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return { x, y };
+  };
+
+  return (
+    <section className="relative py-20 px-6 overflow-hidden">
+      {/* Aurora Background */}
+      <div className="absolute inset-0 aurora-background pointer-events-none"></div>
+
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black pointer-events-none"></div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-6xl mx-auto">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter">
+            Technical Expertise
+          </h2>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            A comprehensive skill set spanning modern web technologies, cloud
+            infrastructure, and cutting-edge AI solutions.
+          </p>
+        </motion.div>
+
+        {/* Orbit Container */}
+        <div
+          ref={containerRef}
+          className="relative h-[500px] flex items-center justify-center"
+          onMouseMove={handleMouseMove}
+        >
+          {/* Central Core */}
+          <motion.div
+            className="absolute w-24 h-24 rounded-full glass-morphism flex items-center justify-center z-20"
+            animate={{
+              x: mousePosition.x,
+              y: mousePosition.y,
+            }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <div className="text-center">
+              <Cpu className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+              <p className="text-xs font-bold text-blue-300 uppercase tracking-widest">
+                Skills
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Orbital Ring */}
+          <div className="absolute w-80 h-80 border border-blue-500/20 rounded-full"></div>
+          <div className="absolute w-96 h-96 border border-blue-500/10 rounded-full"></div>
+
+          {/* Orbiting Skills */}
+          <div
+            ref={orbitRef}
+            className="absolute w-80 h-80"
+            style={{
+              perspective: '1000px',
+            }}
+          >
+            {skills.map((skill, index) => {
+              const position = calculatePosition(index, skills.length);
+              const isHovered = hoveredSkill === skill.id;
+
+              return (
+                <motion.div
+                  key={skill.id}
+                  className="absolute w-24 h-24"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    x: position.x,
+                    y: position.y,
+                    marginLeft: '-48px',
+                    marginTop: '-48px',
+                  }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1,
+                  }}
+                  viewport={{ once: true }}
+                  onMouseEnter={() => setHoveredSkill(skill.id)}
+                  onMouseLeave={() => setHoveredSkill(null)}
+                >
+                  <motion.button
+                    className="w-full h-full rounded-full glass-morphism flex flex-col items-center justify-center border-2 transition-all"
+                    style={{
+                      borderColor: isHovered ? skill.color : `${skill.color}40`,
+                      boxShadow: isHovered
+                        ? `0 0 30px ${skill.color}40`
+                        : 'none',
+                    }}
+                    whileHover={{
+                      scale: 1.15,
+                      z: 10,
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div style={{ color: skill.color }}>{skill.icon}</div>
+                    <p className="text-xs font-bold text-white mt-1 text-center">
+                      {skill.name}
+                    </p>
+                  </motion.button>
+
+                  {/* Tooltip */}
+                  {isHovered && (
+                    <motion.div
+                      className="absolute top-full mt-4 left-1/2 -translate-x-1/2 glass-morphism rounded-lg p-3 w-48 z-50"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="text-xs font-semibold text-blue-300 mb-2">
+                        {skill.description}
+                      </p>
+                      <div className="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: skill.color }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${skill.proficiency}%` }}
+                          transition={{ duration: 0.6, delay: 0.1 }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2">
+                        {skill.proficiency}% Proficiency
+                      </p>
+                    </motion.div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Proficiency Grid */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          {skills.map((skill, index) => (
+            <motion.div
+              key={skill.id}
+              className="glass-morphism rounded-lg p-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.4 + index * 0.05,
+              }}
+              viewport={{ once: true }}
+              whileHover={{ y: -4 }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div style={{ color: skill.color }}>{skill.icon}</div>
+                <h3 className="text-lg font-bold text-white">{skill.name}</h3>
+              </div>
+              <p className="text-sm text-gray-400 mb-4">{skill.description}</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 bg-gray-700/50 rounded-full h-2 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: skill.color }}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${skill.proficiency}%` }}
+                    transition={{ duration: 0.8, delay: 0.5 + index * 0.05 }}
+                    viewport={{ once: true }}
+                  />
+                </div>
+                <span className="text-sm font-bold text-gray-400 w-12 text-right">
+                  {skill.proficiency}%
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default SkillOrbitEnhanced;

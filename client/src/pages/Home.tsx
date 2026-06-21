@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import HeroSection from '@/components/HeroSection';
-import SectionHeader from '@/components/SectionHeader';
-import CTASection from '@/components/CTASection';
+import HeroSectionEnhanced from '@/components/HeroSectionEnhanced';
+import SectionHeaderEnhanced from '@/components/SectionHeaderEnhanced';
+import CTASectionEnhanced from '@/components/CTASectionEnhanced';
+import SkillOrbitEnhanced from '@/components/SkillOrbitEnhanced';
+import ProjectCardEnhanced from '@/components/ProjectCardEnhanced';
 import Timeline from '@/components/Timeline';
 import HorizontalScroll from '@/components/HorizontalScroll';
-import SkillOrbit from '@/components/SkillOrbit';
 import StackingCards from '@/components/StackingCards';
 import WebDevShowcase from '@/components/sections/WebDevShowcase';
 import MobileShowcase from '@/components/sections/MobileShowcase';
@@ -16,14 +17,11 @@ import AutomationShowcase from '@/components/sections/AutomationShowcase';
 import DigitalShowcase from '@/components/sections/DigitalShowcase';
 import { Button } from '@/components/ui/button';
 import { Code2, Smartphone, BarChart3, Database, Brain, Zap, ArrowRight, Mail, Github, Linkedin, Lightbulb, Rocket, Shield, Users, Cpu, Palette, Layers, Target, Sparkles, ShoppingCart } from 'lucide-react';
+import '../cinematic-enhancements.css';
 
 /**
- * Premium Portfolio Homepage
- * Design Philosophy: Cinematic Minimalism with Premium Micro-Interactions
- * - Hero Section: 3D gallery with floating frames
- * - 8 Unique Section Showcases: Each with distinct animations and interactions
- * - Scroll-driven cinematics with GSAP
- * - Professional gallery aesthetic with electric blue accents
+ * Premium Portfolio Homepage - Full Cinematic Edition
+ * Fixed Props for all 15+ sections
  */
 
 interface PortfolioItem {
@@ -66,156 +64,6 @@ const webProjects: PortfolioItem[] = [
   },
 ];
 
-const mobileProjects: PortfolioItem[] = [
-  {
-    id: 4,
-    title: 'Fitness Tracking App',
-    description: 'Cross-platform mobile app with real-time workout tracking and social features',
-    category: 'Mobile Development',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/mobile-app-3d-hT6RRj9MLtiT93x7MjPGgt.webp',
-    technologies: ['React Native', 'Firebase', 'Redux', 'Mapbox'],
-    color: '#7C3AED',
-  },
-  {
-    id: 5,
-    title: 'Banking Mobile App',
-    description: 'Secure banking application with biometric authentication and transaction management',
-    category: 'Mobile Development',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/mobile-app-3d-hT6RRj9MLtiT93x7MjPGgt.webp',
-    technologies: ['Flutter', 'Dart', 'Firebase', 'Stripe'],
-    color: '#7C3AED',
-  },
-  {
-    id: 6,
-    title: 'Social Media App',
-    description: 'Feature-rich social platform with real-time messaging and media sharing capabilities',
-    category: 'Mobile Development',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/mobile-app-3d-hT6RRj9MLtiT93x7MjPGgt.webp',
-    technologies: ['React Native', 'Node.js', 'Socket.io', 'AWS'],
-    color: '#7C3AED',
-  },
-];
-
-const accountingProjects: PortfolioItem[] = [
-  {
-    id: 7,
-    title: 'Accounting Management System',
-    description: 'Comprehensive accounting solution with automated invoicing, expense tracking, and financial reports',
-    category: 'Accounting System',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/accounting-system-3d-GrLhzDTj86m7PJjEZBL37j.webp',
-    technologies: ['React', 'Python', 'PostgreSQL', 'Chart.js'],
-    color: '#10B981',
-  },
-  {
-    id: 8,
-    title: 'Tax Compliance Software',
-    description: 'Automated tax filing and compliance management with multi-jurisdiction support',
-    category: 'Accounting System',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/accounting-system-3d-GrLhzDTj86m7PJjEZBL37j.webp',
-    technologies: ['Vue.js', 'Node.js', 'MySQL', 'PDF.js'],
-    color: '#10B981',
-  },
-  {
-    id: 9,
-    title: 'Financial Analytics Platform',
-    description: 'Advanced analytics and forecasting tool for financial decision-making',
-    category: 'Accounting System',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/accounting-system-3d-GrLhzDTj86m7PJjEZBL37j.webp',
-    technologies: ['React', 'Python', 'Pandas', 'TensorFlow'],
-    color: '#10B981',
-  },
-];
-
-const erpProjects: PortfolioItem[] = [
-  {
-    id: 10,
-    title: 'Enterprise ERP System',
-    description: 'Full-featured ERP solution with modules for finance, HR, supply chain, and manufacturing',
-    category: 'Custom ERP',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/custom-erp-3d-6T4vJNxoDDwwGiNtgc3HsT.webp',
-    technologies: ['Angular', 'Java', 'Oracle DB', 'Microservices'],
-    color: '#F59E0B',
-  },
-  {
-    id: 11,
-    title: 'Manufacturing MES',
-    description: 'Manufacturing Execution System with real-time production monitoring and quality control',
-    category: 'Custom ERP',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/custom-erp-3d-6T4vJNxoDDwwGiNtgc3HsT.webp',
-    technologies: ['React', 'Python', 'PostgreSQL', 'IoT'],
-    color: '#F59E0B',
-  },
-  {
-    id: 12,
-    title: 'Supply Chain Management',
-    description: 'End-to-end supply chain visibility with demand forecasting and inventory optimization',
-    category: 'Custom ERP',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/custom-erp-3d-6T4vJNxoDDwwGiNtgc3HsT.webp',
-    technologies: ['Vue.js', 'Node.js', 'MongoDB', 'ML'],
-    color: '#F59E0B',
-  },
-];
-
-const aiProjects: PortfolioItem[] = [
-  {
-    id: 13,
-    title: 'AI-Powered Chatbot',
-    description: 'Intelligent conversational AI with natural language processing and machine learning capabilities',
-    category: 'AI/ML',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/ai-ml-3d-nZBons5H45cZHz3Sq66axw.webp',
-    technologies: ['Python', 'TensorFlow', 'NLP', 'React'],
-    color: '#EC4899',
-  },
-  {
-    id: 14,
-    title: 'Computer Vision System',
-    description: 'Advanced image recognition and object detection for industrial quality control',
-    category: 'AI/ML',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/ai-ml-3d-nZBons5H45cZHz3Sq66axw.webp',
-    technologies: ['Python', 'OpenCV', 'PyTorch', 'YOLO'],
-    color: '#EC4899',
-  },
-  {
-    id: 15,
-    title: 'Predictive Analytics Engine',
-    description: 'Machine learning models for demand forecasting and customer behavior prediction',
-    category: 'AI/ML',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/ai-ml-3d-nZBons5H45cZHz3Sq66axw.webp',
-    technologies: ['Python', 'Scikit-learn', 'XGBoost', 'FastAPI'],
-    color: '#EC4899',
-  },
-];
-
-const automationProjects: PortfolioItem[] = [
-  {
-    id: 16,
-    title: 'n8n Workflow Automation',
-    description: 'Complex business process automation connecting multiple APIs and services seamlessly',
-    category: 'Automation',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/n8n-automation-3d-6wQHzjG7MTp53YTKqD4Nbt.webp',
-    technologies: ['n8n', 'Zapier', 'APIs', 'Node.js'],
-    color: '#FF6B35',
-  },
-  {
-    id: 17,
-    title: 'RPA Solution',
-    description: 'Robotic Process Automation for repetitive business tasks with high accuracy',
-    category: 'Automation',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/n8n-automation-3d-6wQHzjG7MTp53YTKqD4Nbt.webp',
-    technologies: ['UiPath', 'Python', 'Selenium', 'OCR'],
-    color: '#FF6B35',
-  },
-  {
-    id: 18,
-    title: 'Data Pipeline Automation',
-    description: 'ETL workflows for data integration, transformation, and loading across systems',
-    category: 'Automation',
-    image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663780035759/HoFaYJ9BRNV8fUaSiyHs3Z/n8n-automation-3d-6wQHzjG7MTp53YTKqD4Nbt.webp',
-    technologies: ['Apache Airflow', 'Python', 'Kafka', 'Spark'],
-    color: '#FF6B35',
-  },
-];
-
 export default function Home() {
   const [isScrolling, setIsScrolling] = React.useState(false);
 
@@ -228,7 +76,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-black text-white">
       {/* Navigation Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolling ? 'bg-black/80 backdrop-blur-xl border-b border-blue-500/20 py-4' : 'bg-transparent py-6'}`}>
         <div className="container max-w-7xl mx-auto px-6 flex items-center justify-between">
@@ -237,7 +85,7 @@ export default function Home() {
             <span className="text-2xl font-black text-white tracking-tighter">ORTECH</span>
           </div>
           <nav className="hidden md:flex items-center gap-10">
-            {['Gallery', 'Projects', 'About', 'Services'].map((item) => (
+            {['Gallery', 'Projects', 'Skills', 'Services', 'Contact'].map((item) => (
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`} 
@@ -253,15 +101,20 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section with 3D Gallery */}
-      <section id="gallery" className="relative w-full pt-20">
-        <HeroSection />
+      {/* 1. Hero Section - Enhanced Cinematic */}
+      <section id="gallery" className="relative w-full">
+        <HeroSectionEnhanced />
       </section>
 
-      {/* 1. Web Development - Parallax Layers */}
-      <WebDevShowcase projects={webProjects} />
+      {/* 2. Web Development Showcase */}
+      <WebDevShowcase 
+        projects={[
+          { id: 1, title: 'E-Commerce Platform', description: 'Modern e-commerce solution', category: 'Web', color: '#0066FF', features: ['Real-time', 'Secure'], tech: ['React', 'Node'] },
+          { id: 2, title: 'SaaS Dashboard', description: 'Enterprise platform', category: 'Web', color: '#0066FF', features: ['Multi-tenant', 'Analytics'], tech: ['Next.js', 'Supabase'] }
+        ]} 
+      />
 
-      {/* 2. Mobile Applications - Interactive Phone Mockups */}
+      {/* 3. Mobile Applications Showcase */}
       <MobileShowcase
         apps={[
           {
@@ -283,7 +136,24 @@ export default function Home() {
         ]}
       />
 
-      {/* 3. Accounting Systems - Data Stream Tables */}
+      {/* 4. Featured Projects - Enhanced Cards */}
+      <section id="projects" className="py-24 px-6 bg-black relative">
+        <div className="container max-w-7xl mx-auto">
+          <SectionHeaderEnhanced 
+            title="Strategic Solutions"
+            subtitle="Case Studies"
+            description="Deep dive into our most successful digital transformations and enterprise solutions."
+            accentColor="#0066FF"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+            {webProjects.map((project) => (
+              <ProjectCardEnhanced key={project.id} {...project} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Accounting Systems Showcase */}
       <AccountingShowcase
         systems={[
           {
@@ -302,411 +172,149 @@ export default function Home() {
         ]}
       />
 
-      {/* 4. ERP Solutions - Isometric Diagram */}
+      {/* 6. ERP Solutions Showcase */}
       <ERPShowcase
         modules={[
-          {
-            id: 1,
-            name: 'Inventory',
-            description: 'Stock management',
-            icon: <Database className="w-6 h-6" />,
-            color: '#F59E0B',
-            position: 'top-left',
-          },
-          {
-            id: 2,
-            name: 'Finance',
-            description: 'Financial operations',
-            icon: <Zap className="w-6 h-6" />,
-            color: '#10B981',
-            position: 'top-right',
-          },
-          {
-            id: 3,
-            name: 'HR',
-            description: 'Human resources',
-            icon: <Users className="w-6 h-6" />,
-            color: '#0066FF',
-            position: 'center',
-          },
-          {
-            id: 4,
-            name: 'Sales',
-            description: 'Sales management',
-            icon: <Rocket className="w-6 h-6" />,
-            color: '#EC4899',
-            position: 'bottom-left',
-          },
-          {
-            id: 5,
-            name: 'Analytics',
-            description: 'Business intelligence',
-            icon: <BarChart3 className="w-6 h-6" />,
-            color: '#7C3AED',
-            position: 'bottom-right',
-          },
+          { id: 1, name: 'Inventory', description: 'Stock management', icon: <Database className="w-6 h-6" />, color: '#F59E0B', position: 'top-left' },
+          { id: 2, name: 'Finance', description: 'Financial operations', icon: <Zap className="w-6 h-6" />, color: '#10B981', position: 'top-right' },
+          { id: 3, name: 'HR', description: 'Human resources', icon: <Users className="w-6 h-6" />, color: '#0066FF', position: 'center' },
+          { id: 4, name: 'Sales', description: 'Sales management', icon: <Rocket className="w-6 h-6" />, color: '#EC4899', position: 'bottom-left' },
+          { id: 5, name: 'Analytics', description: 'Business intelligence', icon: <BarChart3 className="w-6 h-6" />, color: '#7C3AED', position: 'bottom-right' },
         ]}
       />
 
-      {/* 5. AI & Machine Learning - Particle System */}
+      {/* 7. AI & Machine Learning Showcase */}
       <AIShowcase
         models={[
-          {
-            id: 1,
-            name: 'Predictive Analytics',
-            description: 'Forecast trends and patterns',
-            accuracy: 94,
-            color: '#EC4899',
-          },
-          {
-            id: 2,
-            name: 'NLP Engine',
-            description: 'Natural language processing',
-            accuracy: 91,
-            color: '#0066FF',
-          },
-          {
-            id: 3,
-            name: 'Computer Vision',
-            description: 'Image recognition & analysis',
-            accuracy: 96,
-            color: '#10B981',
-          },
+          { id: 1, name: 'Predictive Analytics', description: 'Forecast trends and patterns', accuracy: 94, color: '#EC4899' },
+          { id: 2, name: 'NLP Engine', description: 'Natural language processing', accuracy: 91, color: '#0066FF' },
+          { id: 3, name: 'Computer Vision', description: 'Image recognition & analysis', accuracy: 96, color: '#10B981' },
         ]}
       />
 
-      {/* 6. E-commerce - Magnetic Product Grid */}
+      {/* 8. E-commerce Solutions Showcase */}
       <EcommerceShowcase
         products={[
-          {
-            id: 1,
-            name: 'Premium Dashboard',
-            category: 'SaaS',
-            price: '$299/mo',
-            rating: 5,
-            color: '#0066FF',
-          },
-          {
-            id: 2,
-            name: 'Mobile App',
-            category: 'Development',
-            price: '$5K+',
-            rating: 5,
-            color: '#7C3AED',
-          },
-          {
-            id: 3,
-            name: 'Enterprise Suite',
-            category: 'Enterprise',
-            price: 'Custom',
-            rating: 5,
-            color: '#10B981',
-          },
+          { id: 1, name: 'Global Storefront', category: 'Headless Commerce', price: '$2,500', rating: 5, color: '#0066FF' },
+          { id: 2, name: 'Marketplace Hub', category: 'Multi-vendor', price: '$4,800', rating: 5, color: '#7C3AED' },
+          { id: 3, name: 'B2B Portal', category: 'Enterprise', price: '$3,200', rating: 4, color: '#10B981' },
         ]}
       />
 
-      {/* 7. Automation & Integration - Node Flow */}
+      {/* 9. Automation & n8n Showcase */}
       <AutomationShowcase
         flows={[
-          {
-            id: 1,
-            name: 'Data Pipeline',
-            color: '#FF6B35',
-            steps: ['Extract', 'Transform', 'Validate', 'Load', 'Archive'],
-          },
-          {
-            id: 2,
-            name: 'Customer Workflow',
-            color: '#0066FF',
-            steps: ['Signup', 'Verify', 'Onboard', 'Activate', 'Monitor'],
-          },
+          { id: 1, name: 'Lead Automation', description: 'Automated sales funnel and CRM sync', color: '#FF6B35', nodes: 12 },
+          { id: 2, name: 'Data Pipeline', description: 'Real-time ETL and data synchronization', color: '#0066FF', nodes: 8 },
         ]}
       />
 
-      {/* 8. Digital Transformation - Scanning Effect */}
+      {/* 10. Digital Marketing Showcase */}
       <DigitalShowcase
         services={[
-          {
-            id: 1,
-            title: 'Cloud Migration',
-            description: 'Seamless transition to cloud infrastructure',
-            color: '#0066FF',
-            features: ['Zero Downtime', 'Data Security', 'Cost Optimization'],
-          },
-          {
-            id: 2,
-            title: 'API Development',
-            description: 'RESTful and GraphQL API solutions',
-            color: '#7C3AED',
-            features: ['Scalable', 'Documented', 'Secure'],
-          },
-          {
-            id: 3,
-            title: 'DevOps Pipeline',
-            description: 'Automated CI/CD workflows',
-            color: '#10B981',
-            features: ['Continuous Integration', 'Automated Testing', 'Deployment'],
-          },
-          {
-            id: 4,
-            title: 'Cybersecurity',
-            description: 'Enterprise-grade security solutions',
-            color: '#F59E0B',
-            features: ['Threat Detection', 'Compliance', 'Incident Response'],
-          },
+          { id: 1, title: 'Growth Hacking', description: 'Aggressive user acquisition strategies with data-driven optimization.', features: ['Viral Loops', 'A/B Testing', 'Conversion Optimization'], color: '#00D4FF' },
+          { id: 2, title: 'Brand Identity', description: 'Strategic brand positioning and premium visual design systems.', features: ['Visual Language', 'Brand Strategy', 'Logo Design'], color: '#8B5CF6' },
         ]}
       />
 
-      {/* Timeline Section */}
-      <section className="py-32 bg-gradient-to-b from-white to-blue-50">
+      {/* 11. Technical Expertise - Enhanced 3D Orbit */}
+      <section id="skills" className="bg-black relative">
+        <SkillOrbitEnhanced />
+      </section>
+
+      {/* 12. Experience Timeline */}
+      <section className="py-24 bg-black">
         <div className="container max-w-7xl mx-auto px-6">
-          <SectionHeader
-            icon={Lightbulb}
-            title="Journey & Milestones"
-            subtitle="Our evolution through key achievements and transformations"
-            accentColor="#0066FF"
-            variant="centered"
+          <SectionHeaderEnhanced 
+            title="Our Journey"
+            subtitle="Milestones"
+            description="A timeline of innovation, growth, and successful digital transformations."
+            accentColor="#8B5CF6"
+            align="center"
           />
-          <Timeline
-            items={[
-              {
-                year: '2021',
-                title: 'Began Professional Development',
-                description: 'Started professional development career with focus on web technologies',
-                color: '#0066FF',
-              },
-              {
-                year: '2022',
-                title: 'First Major Project',
-                description: 'Delivered enterprise solution for leading financial institution',
-                color: '#7C3AED',
-              },
-              {
-                year: '2023',
-                title: 'Expanded Services',
-                description: 'Added AI and Machine Learning expertise to service offerings',
-                color: '#10B981',
-              },
-              {
-                year: '2024',
-                title: 'Global Recognition',
-                description: 'Achieved recognition for innovative solutions and client success',
-                color: '#F59E0B',
-              },
-              {
-                year: '2025',
-                title: 'Industry Leadership',
-                description: 'Established as thought leader in digital transformation',
-                color: '#EC4899',
-              },
+          <Timeline 
+            events={[
+              { year: '2024', title: 'Global Expansion', description: 'Opened new offices in tech hubs worldwide.' },
+              { year: '2023', title: 'AI Integration', description: 'Launched enterprise-grade AI solutions.' },
+              { year: '2022', title: 'Company Founded', description: 'Started with a vision for digital excellence.' },
             ]}
           />
         </div>
       </section>
 
-      {/* Horizontal Scroll Section */}
-      <section className="py-32 bg-white">
-        <HorizontalScroll
-          title="Featured Projects"
-          subtitle="Explore our most impactful work and innovative solutions"
+      {/* 13. Service Stack - Horizontal Scroll */}
+      <section id="services" className="bg-black">
+        <HorizontalScroll 
           items={[
-            {
-              id: '1',
-              title: 'Analytics Dashboard',
-              subtitle: 'Real-time Data Visualization',
-              description: 'Advanced analytics platform with interactive charts, real-time data processing, and predictive insights',
-              color: '#0066FF',
-            },
-            {
-              id: '2',
-              title: 'Mobile Banking',
-              subtitle: 'Secure Financial Platform',
-              description: 'Enterprise-grade mobile banking solution with biometric security, instant transfers, and portfolio management',
-              color: '#7C3AED',
-            },
-            {
-              id: '3',
-              title: 'AI Assistant',
-              subtitle: 'Intelligent Automation',
-              description: 'Machine learning-powered assistant that learns user preferences and automates complex workflows',
-              color: '#10B981',
-            },
-            {
-              id: '4',
-              title: 'Cloud Platform',
-              subtitle: 'Infrastructure as Code',
-              description: 'Scalable cloud infrastructure with automatic deployment, monitoring, and disaster recovery',
-              color: '#F59E0B',
-            },
+            { title: 'Strategic Consulting', description: 'Digital roadmap planning', icon: <Lightbulb /> },
+            { title: 'Full-Stack Dev', description: 'Scalable web applications', icon: <Code2 /> },
+            { title: 'Mobile Innovation', description: 'Native & Hybrid solutions', icon: <Smartphone /> },
+            { title: 'Cloud Architecture', description: 'Secure & reliable infra', icon: <Shield /> },
           ]}
         />
       </section>
 
-      {/* Skill Orbit Section */}
-      <section className="py-32 bg-gradient-to-b from-blue-50 to-white">
-        <SkillOrbit
-          title="Technical Expertise"
-          subtitle="Interactive skill visualization with proficiency levels"
-          skills={[
-            { name: 'React', icon: Code2, color: '#61DAFB', level: 95 },
-            { name: 'TypeScript', icon: Cpu, color: '#3178C6', level: 90 },
-            { name: 'Node.js', icon: Zap, color: '#68A063', level: 88 },
-            { name: 'UI/UX Design', icon: Palette, color: '#FF6B6B', level: 92 },
-            { name: 'Web Performance', icon: Rocket, color: '#FF9F1C', level: 87 },
-            { name: 'Database Design', icon: Database, color: '#13C2C2', level: 85 },
-            { name: 'Cloud Architecture', icon: Layers, color: '#9C27B0', level: 83 },
-            { name: 'DevOps', icon: Target, color: '#FF6B35', level: 80 },
-          ]}
-        />
-      </section>
-
-      {/* Stacking Cards Section */}
-      <section className="py-32 bg-white">
-        <StackingCards
-          title="Our Process"
-          subtitle="Step-by-step approach to delivering excellence"
+      {/* 14. Value Propositions - Stacking Cards */}
+      <section className="bg-black py-24">
+        <StackingCards 
           cards={[
-            {
-              id: '1',
-              title: 'Discovery & Strategy',
-              description: 'We begin by understanding your business goals, target audience, and unique challenges to create a tailored strategy.',
-              color: '#0066FF',
-              details: [
-                'Market research and competitor analysis',
-                'User persona development',
-                'Technical requirements assessment',
-                'Project roadmap creation',
-              ],
-            },
-            {
-              id: '2',
-              title: 'Design & Prototyping',
-              description: 'Our design team creates stunning, user-centric interfaces with interactive prototypes for validation.',
-              color: '#7C3AED',
-              details: [
-                'Wireframing and user flows',
-                'High-fidelity mockups',
-                'Interactive prototypes',
-                'Design system documentation',
-              ],
-            },
-            {
-              id: '3',
-              title: 'Development & Integration',
-              description: 'Expert developers build scalable, performant solutions using cutting-edge technologies and best practices.',
-              color: '#10B981',
-              details: [
-                'Full-stack development',
-                'API integration',
-                'Database optimization',
-                'Security implementation',
-              ],
-            },
-            {
-              id: '4',
-              title: 'Testing & Deployment',
-              description: 'Rigorous testing ensures quality, performance, and reliability before launching to production.',
-              color: '#F59E0B',
-              details: [
-                'QA testing and bug fixes',
-                'Performance optimization',
-                'Security audits',
-                'Smooth deployment',
-              ],
-            },
-            {
-              id: '5',
-              title: 'Support & Growth',
-              description: 'Ongoing support, monitoring, and optimization to ensure your solution continues to deliver value.',
-              color: '#EC4899',
-              details: [
-                '24/7 technical support',
-                'Performance monitoring',
-                'Regular updates',
-                'Continuous improvement',
-              ],
-            },
+            { title: 'Innovation First', description: 'We push boundaries with cutting-edge tech.', color: '#0066FF' },
+            { title: 'User Centric', description: 'Design that speaks to your audience.', color: '#7C3AED' },
+            { title: 'Scale Ready', description: 'Solutions built for future growth.', color: '#10B981' },
           ]}
         />
       </section>
 
-      {/* CTA Section */}
-      <section className="py-32 bg-gradient-to-b from-blue-50 to-white">
-        <div className="container max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2
-              className="text-5xl md:text-6xl font-bold text-gray-900 mb-4"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              Let's Create Something Amazing
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Ready to transform your vision into reality? Let's collaborate to build solutions that drive growth and innovation.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg flex items-center gap-2">
-              Start Your Project
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="outline"
-              className="px-8 py-4 text-lg border-2 border-gray-300 hover:border-gray-400"
-            >
-              Schedule a Call
-            </Button>
-          </div>
-        </div>
+      {/* 15. Contact Section - Enhanced CTA */}
+      <section id="contact" className="bg-black relative">
+        <CTASectionEnhanced />
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-950 text-white py-16">
+      <footer className="py-16 bg-black border-t border-white/5">
         <div className="container max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Portfolio</h3>
-              <p className="text-gray-400 text-sm">Crafting digital excellence through innovative design and development</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Web Development</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Mobile Apps</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">AI Solutions</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cloud Services</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Connect</h4>
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-2 h-8 bg-blue-600 rounded-full"></div>
+                <span className="text-2xl font-black text-white tracking-tighter">ORTECH</span>
+              </div>
+              <p className="text-gray-500 max-w-sm mb-8">
+                Crafting digital excellence through innovative design and development. We transform visions into reality.
+              </p>
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
-                  <Github className="w-5 h-5" />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
-                  <Linkedin className="w-5 h-5" />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
-                  <Mail className="w-5 h-5" />
-                </a>
+                {[Github, Linkedin, Mail].map((Icon, i) => (
+                  <a key={i} href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-blue-600 hover:border-blue-600 transition-all">
+                    <Icon className="w-5 h-5" />
+                  </a>
+                ))}
               </div>
             </div>
+            <div>
+              <h4 className="text-white font-bold mb-6">Services</h4>
+              <ul className="space-y-4 text-gray-500 text-sm">
+                <li>Web Development</li>
+                <li>Mobile Apps</li>
+                <li>AI Solutions</li>
+                <li>Automation</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-bold mb-6">Contact</h4>
+              <ul className="space-y-4 text-gray-500 text-sm">
+                <li>hello@ortech.digital</li>
+                <li>+1 (555) 000-0000</li>
+                <li>Silicon Valley, CA</li>
+              </ul>
+            </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© 2025 Portfolio. All rights reserved.</p>
-            <div className="flex gap-6 text-sm text-gray-400 mt-4 md:mt-0">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+          <div className="pt-8 border-t border-white/5 flex flex-col md:row justify-between items-center gap-4">
+            <p className="text-gray-600 text-xs">
+              © 2026 ORTECH Digital Innovation. All rights reserved.
+            </p>
+            <div className="flex gap-6 text-gray-600 text-xs">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Service</a>
             </div>
           </div>
         </div>

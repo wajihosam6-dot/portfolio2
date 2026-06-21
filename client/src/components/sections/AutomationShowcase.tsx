@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Cpu, Gauge, Activity, Zap, ArrowRight, Circle } from 'lucide-react';
+import { Cpu, Gauge, Activity, ArrowRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,13 +18,7 @@ interface AutomationShowcaseProps {
 }
 
 /* ─── Particle Canvas Engine ─── */
-function ParticleCanvas({
-  color,
-  scrollTween,
-}: {
-  color: string;
-  scrollTween: gsap.core.Tween | null;
-}) {
+function ParticleCanvas({ color }: { color: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -146,33 +140,23 @@ function ParticleCanvas({
 function ProcessingNode({
   step,
   index,
-  total,
   color,
-  scrollTween,
 }: {
   step: string;
   index: number;
-  total: number;
   color: string;
-  scrollTween: gsap.core.Tween | null;
 }) {
   const nodeRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(nodeRef, { once: false, amount: 0.3 });
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    if (!nodeRef.current || !scrollTween) return;
-    const t = scrollTween;
-
-    const check = () => {
-      const p = t.progress();
-      const start = index / total;
-      const end = (index + 1) / total;
-      setActive(p >= start && p < end);
-    };
-
-    t.eventCallback('onUpdate', check);
-    return () => { t.eventCallback('onUpdate', null); };
-  }, [scrollTween, index, total]);
+    if (inView) {
+      const t = setTimeout(() => setActive(true), index * 300);
+      return () => clearTimeout(t);
+    }
+    setActive(false);
+  }, [inView, index]);
 
   return (
     <div ref={nodeRef} className="flex flex-col items-center flex-shrink-0">
@@ -374,24 +358,6 @@ function PipelineSVG({ color, steps }: { color: string; steps: string[] }) {
 /* ─── Main Component ─── */
 export const AutomationShowcase: React.FC<AutomationShowcaseProps> = ({ flows }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollTween, setScrollTween] = useState<gsap.core.Tween | null>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tween = gsap.to({}, {
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top center',
-          end: 'bottom center',
-          scrub: 1.5,
-          onUpdate: (self) => {
-            setScrollTween(self as unknown as gsap.core.Tween);
-          },
-        },
-      });
-    }, containerRef);
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section ref={containerRef} className="py-32 bg-black relative overflow-hidden min-h-[200vh]">
@@ -421,7 +387,7 @@ export const AutomationShowcase: React.FC<AutomationShowcaseProps> = ({ flows })
 
       {/* Particle Canvas per flow */}
       {flows.map((f) => (
-        <ParticleCanvas key={f.id} color={f.color} scrollTween={scrollTween} />
+        <ParticleCanvas key={f.id} color={f.color} />
       ))}
 
       <div className="container max-w-7xl mx-auto px-6 relative z-10">
@@ -532,9 +498,7 @@ export const AutomationShowcase: React.FC<AutomationShowcaseProps> = ({ flows })
                         key={idx}
                         step={step}
                         index={idx}
-                        total={flow.steps.length}
                         color={flow.color}
-                        scrollTween={scrollTween}
                       />
                     ))}
                   </div>
